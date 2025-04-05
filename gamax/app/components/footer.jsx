@@ -43,7 +43,7 @@ export default function Footer() {
 
       {/* Bottom Row */}
       <div className="mt-12 flex flex-col md:flex-row items-center justify-between text-xs text-gray-400 border-t border-gray-800 pt-6">
-        <p>2022 © Copyright GamaX. All Rights Reserved</p>
+        <p>2025 © Copyright GamaX. All Rights Reserved</p>
         <div className="space-x-6 mt-4 md:mt-0">
           <a href="#" className="hover:text-white">Terms Of Service</a>
           <a href="#" className="hover:text-white">Privacy Policy</a>
