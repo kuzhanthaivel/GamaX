@@ -68,7 +68,7 @@ export default function Profile() {
           quality={100}
         />
         <div className="absolute inset-0  bg-opacity-70"></div>
-      </div>
+      </div>c
 
       {/* Content container */}
       <div className="flex-grow">
