@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.4",
+    "ethers": "^6.13.5",
     "framer-motion": "^12.6.3",
     "next": "15.2.4",
     "react": "^19.0.0",

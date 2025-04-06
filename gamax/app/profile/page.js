@@ -7,43 +7,53 @@ import { Outfit } from 'next/font/google';
 import BgImage from "../../assets/Bg.jpg";
 import { FaEthereum } from "react-icons/fa";
 
+// Import game assets
+import SteelSword from '../../assets/Gameassets/SteelSword.png';
+import ElvenBow from '../../assets/Gameassets/Elven_Bow.png';
+import FlameStaff from '../../assets/Gameassets/Flame_Staff.png';
+import FrostAxe from '../../assets/Gameassets/Frost_Axe.png';
+
 const outfit = Outfit({
   subsets: ["latin"],
   weight: "400",
 });
 
-const dummyAssets = [
+const rareCollections = [
   {
     id: 1,
-    name: "Legendary Dragon Skin",
-    description: "Rare dragon-themed character skin with fire effects",
-    price: "2.5",
-    game: "Dragon Adventures",
-    rarity: "Legendary"
+    name: "Steel Sword",
+    description: "A sturdy sword forged from high-quality steel",
+    price: "0.45",
+    game: "Medieval Legends",
+    rarity: "Rare",
+    image: SteelSword
   },
   {
     id: 2,
-    name: "Golden AK-47",
-    description: "Exclusive gold-plated assault rifle with custom animations",
-    price: "1.8",
-    game: "Battle Royale Extreme",
-    rarity: "Epic"
+    name: "Elven Bow",
+    description: "An elegant bow crafted by elven artisans",
+    price: "0.75",
+    game: "Forest Guardians",
+    rarity: "Rare",
+    image: ElvenBow
   },
   {
     id: 3,
-    name: "Cyberpunk Bike",
-    description: "Neon-lit futuristic motorcycle with turbo boost",
-    price: "3.2",
-    game: "Neon City Racing",
-    rarity: "Legendary"
+    name: "Flame Staff",
+    description: "Staff imbued with the power of fire",
+    price: "0.85",
+    game: "Mage Wars",
+    rarity: "Rare",
+    image: FlameStaff
   },
   {
     id: 4,
-    name: "Ninja Outfit",
-    description: "Stealthy black outfit with smoke bomb effects",
-    price: "0.9",
-    game: "Shadow Strike",
-    rarity: "Rare"
+    name: "Frost Axe",
+    description: "Axe that freezes enemies on impact",
+    price: "0.95",
+    game: "Northern Realms",
+    rarity: "Rare",
+    image: FrostAxe
   }
 ];
 
@@ -67,8 +77,8 @@ export default function Profile() {
           objectFit="cover"
           quality={100}
         />
-        <div className="absolute inset-0  bg-opacity-70"></div>
-      </div>c
+        <div className="absolute inset-0 bg-opacity-70"></div>
+      </div>
 
       {/* Content container */}
       <div className="flex-grow">
@@ -80,24 +90,24 @@ export default function Profile() {
           <div className="text-center mb-16">
             <div className="flex flex-col items-center mt-4">
               <div className="w-20 h-20 rounded-full border-4 border-white bg-gray-700 flex items-center justify-center">
-              <Image
-          src={Profile1}
-          alt="Profile1"
-         className="rounded-full w-full h-full"
-        />
+                <Image
+                  src={Profile1}
+                  alt="Profile1"
+                  className="rounded-full w-full h-full"
+                />
               </div>
-              <h1 className="text-3xl font-bold mt-4">Hi, I am John,</h1>
+              <h1 className="text-3xl font-bold mt-4 mb-2">Hi, I am Your Name,</h1>
               <p className="text-gray-400 text-sm mt-1">0x1ab66c14a8e85ddc3234835fbaf42e78a72f4f01</p>
             </div>
           </div>
 
-          {/* My Assets */}
+          {/* My Rare Collections */}
           <h2 className="text-2xl font-bold text-center mb-6">My Assets</h2>
-          <div className="grid grid-cols-3 xl:grid-cols-4 gap-6 mb-16 justify-items-center">
-            {dummyAssets.map((asset) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 justify-items-center">
+            {rareCollections.map((asset) => (
               <div 
                 key={asset.id}
-                className="border rounded-md shadow-lg text-[#6D737A] font-sans space-y-2 px-3 py-4 w-64 bg-white/10 backdrop-blur-md border-white/10 hover:border-indigo-500 transition-colors"
+                className="border rounded-md shadow-lg text-[#6D737A] font-sans space-y-2 px-3 py-4 w-full max-w-xs bg-white/10 backdrop-blur-md border-white/10 hover:border-indigo-500 transition-colors"
               >
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -111,8 +121,13 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Image placeholder with rarity badge */}
-                <div className="relative w-full h-56 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg">
+                {/* Image with rarity badge */}
+                <div className="relative w-full h-56 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
+                  <Image 
+                    src={asset.image} 
+                    alt={asset.name}
+                    className="object-contain h-40 w-40"
+                  />
                   <span className={`absolute top-2 right-2 text-xs px-3 py-1 rounded-md font-semibold ${
                     asset.rarity === "Legendary" ? "bg-purple-900 text-purple-200" :
                     asset.rarity === "Epic" ? "bg-blue-900 text-blue-200" :
@@ -134,7 +149,7 @@ export default function Profile() {
                   <div className="flex items-center gap-1 text-sm text-green-400">
                     <FaEthereum className="text-green-400 w-7 h-7" />
                     <div className="flex flex-col">
-                      <span className="text-sm">Price</span>
+                      <span className="text-sm">Value</span>
                       <span className="font-semibold text-white">{asset.price} ETH</span>
                     </div>
                   </div>
