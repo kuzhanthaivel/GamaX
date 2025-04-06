@@ -4,8 +4,6 @@ import Footer from "../../components/footer";
 import Image from "next/image";
 import { Outfit } from 'next/font/google';
 
-// Import all images
-import Profile1 from "../../assets/profile1.png";
 import GameAlpha from "../../assets/colabs/Game Alpha.jpeg";
 import MysteryQuest from "../../assets/colabs/Mystery Quest.jpeg";
 import SpeedRush from "../../assets/colabs/Speed Rush.jpeg";

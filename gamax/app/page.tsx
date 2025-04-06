@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import { FaGift, FaDollarSign, FaPlusSquare, FaBolt } from "react-icons/fa";
 import Header from '../components/header'
 import Footer from '../components/footer'
 import Image from 'next/image';
@@ -41,7 +40,7 @@ export default function Home() {
           {/* Hero Section */}
           <section className="flex flex-row items-center justify-center px-24 py-20 gap-6">
             <div className="flex-col gap-5 flex">
-              <div> <Image src={landingpageimage1} alt={landingpageimage1} className='w-auto' /></div>
+              <div> <Image src={landingpageimage1} alt="landingpageimage1" className='w-auto' /></div>
             
               <p className="text-[#9F8FC1] mx-auto lg:mx-0 text-lg max-w-xl">
                 GameX Market is a digital platform designed for gamers to buy, sell, and trade virtual assets including game IDs, guns, skins, characters, and more. The platform provides a secure, user-friendly environment where players can monetize their gaming achievements and inventories.
@@ -53,13 +52,13 @@ export default function Home() {
             </div>
             <div className="lg:w-1/2 flex justify-center relative mb-12 lg:mb-0">
               <div className="flex space-x-4">
-                <Image src={landingpageimage2} alt={landingpageimage2} className='w-auto' />
+                <Image src={landingpageimage2} alt="landingpageimage2" className='w-auto' />
               </div>
             </div>
           </section>
           
           <div className="px-24 py-8">
-            <Image src={landingpageimage3} alt={landingpageimage3} className='' />
+            <Image src={landingpageimage3} alt="landingpageimage3" className='' />
           </div>
         </main>
       </div>

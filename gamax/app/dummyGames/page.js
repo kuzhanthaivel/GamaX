@@ -180,7 +180,7 @@ export default function Home() {
         if (typeof window !== 'undefined' && window.ethereum) {
             setIsMetamaskInstalled(true);
         }
-    }, []);
+    }, [allAssets]);
 
     const connectWallet = async () => {
         try {
@@ -320,7 +320,7 @@ export default function Home() {
                                 <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500">
                                     Collection Complete!
                                 </h2>
-                                <p className="text-xl mb-6">You've unlocked all {totalAssets} assets!</p>
+                                <p className="text-xl mb-6">You have unlocked all {totalAssets} assets!</p>
 
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8">
                                     {allAssets.map(asset => (
