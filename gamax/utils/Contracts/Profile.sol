@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract ProfileContract {
-    struct ProfileAsset {
+contract UserProfile {
+    struct Profile {
         address user;
         string assetName;
         string category;
-        uint price;
+        string price;
         string gameName;
         string gameProfile;
         string assetImage;
@@ -15,13 +15,14 @@ contract ProfileContract {
         string status;
     }
 
-    ProfileAsset[] private profileAssets;
+    Profile[] private profiles;
 
-    event ProfileAssetAdded(
+    event ProfileAdded(
+        uint256 indexed profileId,
         address indexed user,
         string assetName,
         string category,
-        uint price,
+        string price,
         string gameName,
         string gameProfile,
         string assetImage,
@@ -30,16 +31,16 @@ contract ProfileContract {
         string status
     );
 
-    event ProfileAssetUpdated(
-        uint indexed index,
+    event ProfileUpdated(
+        uint256 indexed profileId,
         string status
     );
 
-    function addProfileAsset(
+    function addProfile(
         address _user,
         string memory _assetName,
         string memory _category,
-        uint _price,
+        string memory _price,
         string memory _gameName,
         string memory _gameProfile,
         string memory _assetImage,
@@ -47,7 +48,9 @@ contract ProfileContract {
         string memory _rarities,
         string memory _status
     ) public {
-        ProfileAsset memory newAsset = ProfileAsset(
+        uint256 profileId = profiles.length;
+        
+        profiles.push(Profile(
             _user,
             _assetName,
             _category,
@@ -58,11 +61,10 @@ contract ProfileContract {
             _description,
             _rarities,
             _status
-        );
+        ));
 
-        profileAssets.push(newAsset);
-
-        emit ProfileAssetAdded(
+        emit ProfileAdded(
+            profileId,
             _user,
             _assetName,
             _category,
@@ -76,20 +78,20 @@ contract ProfileContract {
         );
     }
 
-    function getAllProfileAssets() public view returns (ProfileAsset[] memory) {
-        return profileAssets;
+    function getAllProfiles() public view returns (Profile[] memory) {
+        return profiles;
     }
 
-    function updateStatusByIndex(
-        uint _index,
+    function updateProfileStatus(
+        uint256 _profileId,
         string memory _status
     ) public {
-        require(_index < profileAssets.length, "Index out of bounds");
+        require(_profileId < profiles.length, "Profile does not exist");
         
-        profileAssets[_index].status = _status;
+        profiles[_profileId].status = _status;
 
-        emit ProfileAssetUpdated(
-            _index,
+        emit ProfileUpdated(
+            _profileId,
             _status
         );
     }

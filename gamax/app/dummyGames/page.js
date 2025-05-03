@@ -340,7 +340,7 @@ export default function DummyGame() {
                                         <div className="flex items-center gap-1 text-sm text-green-400">
                                             <FaEthereum className="text-green-400 w-5 h-5" />
                                             <div className="flex flex-col">
-                                                <span className="text-xs text-gray-400">Price</span>
+                                                <span className="text-xs text-gray-400">Worth</span>
                                                 <span className="font-semibold text-white">{asset.price} ETH</span>
                                             </div>
                                         </div>

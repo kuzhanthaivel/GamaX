@@ -76,7 +76,7 @@ export default function CollaboratorsPage() {
                     </div>
                     <span className="text-lg font-medium text-white">{game.name}</span>
                   </div>
-                  <Link href="/profile" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-1.5 rounded-md font-medium transition-colors duration-200 hover:scale-x-110" >Play</Link>
+                  <Link href="/dummyGames" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-1.5 rounded-md font-medium transition-colors duration-200 hover:scale-x-110" >Play</Link>
                 </div>
                 <p className="text-gray-400 text-sm line-clamp-2">{game.description}</p>
               </div>
