@@ -3,16 +3,11 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import Image from "next/image";
 import { Outfit } from 'next/font/google';
+import Link from 'next/link';
 
-import GameAlpha from "../../assets/colabs/Game Alpha.jpeg";
-import MysteryQuest from "../../assets/colabs/Mystery Quest.jpeg";
-import SpeedRush from "../../assets/colabs/Speed Rush.jpeg";
-import ZombieWars from "../../assets/colabs/Zombie Wars.jpeg";
-import MagicArena from "../../assets/colabs/Magic Arena.png";
-import CyberBlitz from "../../assets/colabs/Cyber Blitz.jpeg";
-import PixelFarm from "../../assets/colabs/Pixel Farm.jpeg";
-import AlienInvasion from "../../assets/colabs/Alien Invasion.jpg";
 import BgImage from "../../assets/Bg.jpg";
+
+import DummyGame from "../../assets/colabs/Game Alpha.jpeg";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -21,67 +16,17 @@ const outfit = Outfit({
 
 const collaborators = [
   {
-    name: "Game Alpha",
-    description: "First-person shooter with stunning graphics.",
+    name: "DummyGame",
+    description: "This Game plartform which is prtotype model of this plartform.",
     action: "Action",
-    image: GameAlpha,
-    cover: GameAlpha,
-  },
-  {
-    name: "Mystery Quest",
-    description: "Solve ancient mysteries in this puzzle adventure.",
-    action: "Adventure",
-    image: MysteryQuest,
-    cover: MysteryQuest,
-  },
-  {
-    name: "Speed Rush",
-    description: "Fast-paced racing with real-time multiplayer.",
-    action: "Racing",
-    image: SpeedRush,
-    cover: SpeedRush,
-  },
-  {
-    name: "Zombie Wars",
-    description: "Survive the apocalypse in this horror game.",
-    action: "Survival",
-    image: ZombieWars,
-    cover: ZombieWars,
-  },
-  {
-    name: "Magic Arena",
-    description: "Battle wizards and cast spells in real-time.",
-    action: "Fantasy",
-    image: MagicArena,
-    cover: MagicArena,
-  },
-  {
-    name: "Cyber Blitz",
-    description: "Cyberpunk hack-n-slash game in neon city.",
-    action: "Sci-Fi",
-    image: CyberBlitz,
-    cover: CyberBlitz,
-  },
-  {
-    name: "Pixel Farm",
-    description: "Cute farming sim with pixel graphics.",
-    action: "Casual",
-    image: PixelFarm,
-    cover: PixelFarm,
-  },
-  {
-    name: "Alien Invasion",
-    description: "Protect Earth from alien attack.",
-    action: "Shooter",
-    image: AlienInvasion,
-    cover: AlienInvasion,
-  },
+    image: DummyGame,
+    cover: DummyGame,
+  }
 ];
 
 export default function CollaboratorsPage() {
   return (
     <div className={`${outfit.className} text-white min-h-screen flex flex-col`}>
-      {/* Full-page background */}
       <div className="fixed inset-0 -z-10">
         <Image
           src={BgImage}
@@ -94,10 +39,9 @@ export default function CollaboratorsPage() {
         <div className="absolute inset-0  bg-opacity-70"></div>
       </div>
 
-      {/* Content container */}
       <div className="flex-grow">
         <Header />
-        
+
         <section className="px-4 sm:px-8 md:px-12 lg:px-20 py-16 relative z-10">
           <h2 className="text-center text-3xl font-bold mb-12">Our Collaborators</h2>
 
@@ -105,9 +49,8 @@ export default function CollaboratorsPage() {
             {collaborators.map((game, index) => (
               <div
                 key={index}
-                className="border rounded-md shadow-lg text-[#6D737A] font-sans space-y-3 px-4 py-5 w-full max-w-xs bg-white/10 backdrop-blur-md border-white/10 hover:border-indigo-500 transition-colors duration-300"
+                className="border rounded-md shadow-lg text-[#6D737A] font-sans space-y-3 px-4 py-5 w-full max-w-xs bg-white/10 backdrop-blur-md border-white/10"
               >
-                {/* Game cover image */}
                 <div className="relative w-full h-48 rounded-lg overflow-hidden">
                   <Image
                     src={game.cover}
@@ -121,7 +64,6 @@ export default function CollaboratorsPage() {
                   </span>
                 </div>
 
-                {/* Title and button */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center gap-3">
                     <div className="relative w-8 h-8 rounded-full overflow-hidden">
@@ -134,13 +76,8 @@ export default function CollaboratorsPage() {
                     </div>
                     <span className="text-lg font-medium text-white">{game.name}</span>
                   </div>
-
-                  <button className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-1.5 rounded-md font-medium transition-colors duration-200">
-                    Play
-                  </button>
+                  <Link href="/profile" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-1.5 rounded-md font-medium transition-colors duration-200 hover:scale-x-110" >Play</Link>
                 </div>
-
-                {/* Description */}
                 <p className="text-gray-400 text-sm line-clamp-2">{game.description}</p>
               </div>
             ))}

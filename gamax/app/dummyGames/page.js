@@ -1,8 +1,13 @@
 "use client";
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Outfit } from 'next/font/google';
+import GameBg from '../../assets/Bg.jpg';
+import { FaEthereum, FaSpinner } from "react-icons/fa";
+import { FiArrowLeft } from "react-icons/fi";
 
+// Import game assets
 import SteelSword from '../../assets/Gameassets/SteelSword.png';
 import ElvenBow from '../../assets/Gameassets/Elven_Bow.png';
 import FlameStaff from '../../assets/Gameassets/Flame_Staff.png';
@@ -16,427 +21,356 @@ import SpeedDraught from '../../assets/Gameassets/Speed_Draught.png';
 import RingOfPower from '../../assets/Gameassets/Ring_of_Power.png';
 import AncientScroll from '../../assets/Gameassets/Ancient_Scroll.png';
 
-export default function Home() {
+const outfit = Outfit({
+    subsets: ["latin"],
+    weight: "400",
+});
+
+const gameAssets = [
+    {
+        id: 1,
+        name: "Steel Sword",
+        description: "A sturdy sword forged from high-quality steel",
+        price: "0.25",
+        category: "Weapon",
+        rarity: "Common",
+        image: SteelSword,
+    },
+    {
+        id: 2,
+        name: "Elven Bow",
+        description: "An elegant bow crafted by elven artisans",
+        price: "0.45",
+        category: "Weapon",
+        rarity: "Rare",
+        image: ElvenBow,
+    },
+    {
+        id: 3,
+        name: "Flame Staff",
+        description: "Staff imbued with the power of fire",
+        price: "0.75",
+        category: "Weapon",
+        rarity: "Epic",
+        image: FlameStaff,
+    },
+    {
+        id: 4,
+        name: "Frost Axe",
+        description: "Axe that freezes enemies on impact",
+        price: "0.65",
+        category: "Weapon",
+        rarity: "Epic",
+        image: FrostAxe,
+    },
+    {
+        id: 5,
+        name: "Wooden Shield",
+        description: "Basic shield for beginner warriors",
+        price: "0.15",
+        category: "Armor",
+        rarity: "Common",
+        image: WoodenShield,
+    },
+    {
+        id: 6,
+        name: "Leather Armor",
+        description: "Lightweight armor made from tough leather",
+        price: "0.35",
+        category: "Armor",
+        rarity: "Common",
+        image: LeatherArmor,
+    },
+    {
+        id: 7,
+        name: "Dragon Helm",
+        description: "Helmet crafted from dragon scales",
+        price: "1.25",
+        category: "Armor",
+        rarity: "Legendary",
+        image: DragonHelm,
+    },
+    {
+        id: 8,
+        name: "Health Potion",
+        description: "Restores 50 health points",
+        price: "0.05",
+        category: "Consumable",
+        rarity: "Common",
+        image: HealthPotion,
+    },
+    {
+        id: 9,
+        name: "Mana Elixir",
+        description: "Restores 30 mana points",
+        price: "0.07",
+        category: "Consumable",
+        rarity: "Common",
+        image: ManaElixir,
+    },
+    {
+        id: 10,
+        name: "Speed Draught",
+        description: "Increases movement speed by 20% for 1 minute",
+        price: "0.12",
+        category: "Consumable",
+        rarity: "Rare",
+        image: SpeedDraught,
+    },
+    {
+        id: 11,
+        name: "Ring of Power",
+        description: "Increases all stats by 5%",
+        price: "0.95",
+        category: "Accessory",
+        rarity: "Epic",
+        image: RingOfPower,
+    },
+    {
+        id: 12,
+        name: "Ancient Scroll",
+        description: "Teaches a random rare spell",
+        price: "0.55",
+        category: "Miscellaneous",
+        rarity: "Rare",
+        image: AncientScroll,
+    }
+];
+
+export default function DummyGame() {
+    const router = useRouter();
+    const [isCollecting, setIsCollecting] = useState(false);
+    const [collectionProgress, setCollectionProgress] = useState(0);
+    const [currentCollectingAsset, setCurrentCollectingAsset] = useState(null);
+    const [isConnected, setIsConnected] = useState(false);
     const [account, setAccount] = useState(null);
-    const [isMetamaskInstalled, setIsMetamaskInstalled] = useState(false);
-
-    // Game assets organized by categories
-    const assetCategories = [
-        {
-            name: "Weapons",
-            assets: [
-                {
-                    id: 1,
-                    name: '⚔️ Steel Sword',
-                    description: 'Basic sword with +15 attack power',
-                    image: SteelSword,
-                    unlockTime: 5000,
-                    category: 'Common',
-                    ethValue: 0.01,
-                    rarityColor: 'bg-gray-400'
-                },
-                {
-                    id: 2,
-                    name: '🏹 Elven Bow',
-                    description: 'Precision bow with +25 attack and ranged capability',
-                    image: ElvenBow,
-                    unlockTime: 7000,
-                    category: 'Rare',
-                    ethValue: 0.03,
-                    rarityColor: 'bg-blue-400'
-                },
-                {
-                    id: 3,
-                    name: '🔥 Flame Staff',
-                    description: 'Magical staff that casts fireballs with 50 damage',
-                    image: FlameStaff,
-                    unlockTime: 10000,
-                    category: 'Epic',
-                    ethValue: 0.05,
-                    rarityColor: 'bg-purple-400'
-                },
-                {
-                    id: 4,
-                    name: '❄️ Frost Axe',
-                    description: 'Axe that freezes enemies on hit (+35 attack)',
-                    image: FrostAxe,
-                    unlockTime: 12000,
-                    category: 'Epic',
-                    ethValue: 0.06,
-                    rarityColor: 'bg-purple-400'
-                }
-            ]
-        },
-        {
-            name: "Armor",
-            assets: [
-                {
-                    id: 5,
-                    name: '🛡️ Wooden Shield',
-                    description: 'Basic shield blocking 30% of damage',
-                    image: WoodenShield,
-                    unlockTime: 5000,
-                    category: 'Common',
-                    ethValue: 0.01,
-                    rarityColor: 'bg-gray-400'
-                },
-                {
-                    id: 6,
-                    name: '🧥 Leather Armor',
-                    description: 'Light armor with +15 defense',
-                    image: LeatherArmor,
-                    unlockTime: 6000,
-                    category: 'Common',
-                    ethValue: 0.02,
-                    rarityColor: 'bg-gray-400'
-                },
-                {
-                    id: 7,
-                    name: '👑 Dragon Helm',
-                    description: 'Legendary helmet with +40 defense and fire resistance',
-                    image: DragonHelm,
-                    unlockTime: 15000,
-                    category: 'Legendary',
-                    ethValue: 0.1,
-                    rarityColor: 'bg-yellow-400'
-                }
-            ]
-        },
-        {
-            name: "Potions",
-            assets: [
-                {
-                    id: 8,
-                    name: '🧪 Health Potion',
-                    description: 'Restores 50 HP instantly',
-                    image: HealthPotion,
-                    unlockTime: 3000,
-                    category: 'Common',
-                    ethValue: 0.005,
-                    rarityColor: 'bg-gray-400'
-                },
-                {
-                    id: 9,
-                    name: '🌀 Mana Elixir',
-                    description: 'Restores 30 MP instantly',
-                    image: ManaElixir,
-                    unlockTime: 4000,
-                    category: 'Common',
-                    ethValue: 0.008,
-                    rarityColor: 'bg-gray-400'
-                },
-                {
-                    id: 10,
-                    name: '⚡ Speed Draught',
-                    description: 'Increases movement speed by 50% for 30s',
-                    image: SpeedDraught,
-                    unlockTime: 8000,
-                    category: 'Rare',
-                    ethValue: 0.04,
-                    rarityColor: 'bg-blue-400'
-                }
-            ]
-        },
-        {
-            name: "Special",
-            assets: [
-                {
-                    id: 11,
-                    name: '💍 Ring of Power',
-                    description: 'Increases all stats by 10% when equipped',
-                    image: RingOfPower,
-                    unlockTime: 20000,
-                    category: 'Legendary',
-                    ethValue: 0.15,
-                    rarityColor: 'bg-yellow-400'
-                },
-                {
-                    id: 12,
-                    name: '📜 Ancient Scroll',
-                    description: 'Teaches a powerful forgotten spell',
-                    image: AncientScroll,
-                    unlockTime: 18000,
-                    category: 'Legendary',
-                    ethValue: 0.12,
-                    rarityColor: 'bg-yellow-400'
-                }
-            ]
-        }
-    ];
-
-    // Flatten all assets into one array
-    const allAssets = assetCategories.flatMap(category => category.assets);
-    const totalAssets = allAssets.length;
-
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isUnlocking, setIsUnlocking] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(0);
-    const [showOwnButton, setShowOwnButton] = useState(false);
-    const [owned, setOwned] = useState([]);
-    const [progress, setProgress] = useState(0);
-    const [selectedCategory, setSelectedCategory] = useState('All');
+    const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && window.ethereum) {
-            setIsMetamaskInstalled(true);
+        if (typeof window.ethereum !== 'undefined') {
+            setIsMetaMaskInstalled(true);
+            checkConnection();
+
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+            window.ethereum.on('chainChanged', () => window.location.reload());
+
+            return () => {
+                if (window.ethereum.removeListener) {
+                    window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+                    window.ethereum.removeListener('chainChanged', () => window.location.reload());
+                }
+            };
         }
-    }, [allAssets]);
+    }, []);
+
+    const checkConnection = async () => {
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            if (accounts.length > 0) {
+                setIsConnected(true);
+                setAccount(accounts[0]);
+            }
+        } catch (error) {
+            console.error('Error checking connection:', error);
+        }
+    };
+
+    const handleAccountsChanged = (accounts) => {
+        if (accounts.length === 0) {
+            setIsConnected(false);
+            setAccount(null);
+        } else {
+            setIsConnected(true);
+            setAccount(accounts[0]);
+        }
+    };
 
     const connectWallet = async () => {
+        if (!isMetaMaskInstalled) {
+            alert('Please install MetaMask to connect your wallet!');
+            window.open('https://metamask.io/download.html', '_blank');
+            return;
+        }
+
         try {
-            if (!window.ethereum) return alert("Please install MetaMask!");
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await window.ethereum.request({
+                method: 'eth_requestAccounts'
+            });
+            setIsConnected(true);
             setAccount(accounts[0]);
-        } catch (err) {
-            console.error(err);
-            alert("Failed to connect wallet. Please try again.");
+        } catch (error) {
+            console.error('Error connecting wallet:', error);
+            if (error.code === 4001) {
+                alert('Please connect to MetaMask to continue.');
+            }
         }
     };
 
-    useEffect(() => {
-        let timer;
-        if (isUnlocking && timeLeft > 0) {
-            timer = setTimeout(() => {
-                setTimeLeft(timeLeft - 1);
-                setProgress(((allAssets[currentIndex].unlockTime / 1000 - timeLeft + 1) / (allAssets[currentIndex].unlockTime / 1000)) * 100);
-            }, 1000);
-        } else if (isUnlocking && timeLeft === 0) {
-            setIsUnlocking(false);
-            setShowOwnButton(true);
-            setProgress(0);
-        }
-        return () => clearTimeout(timer);
-    }, [isUnlocking, timeLeft, currentIndex]);
-
-    const unlockAsset = () => {
-        if (isUnlocking || showOwnButton) return;
-        const time = allAssets[currentIndex].unlockTime;
-        setTimeLeft(time / 1000);
-        setIsUnlocking(true);
+    const disconnectWallet = () => {
+        setIsConnected(false);
+        setAccount(null);
     };
 
-    const ownAsset = () => {
-        if (!owned.includes(allAssets[currentIndex].id)) {
-            setOwned([...owned, allAssets[currentIndex].id]);
-        }
-        setShowOwnButton(false);
-        setCurrentIndex((prev) => (prev + 1) % allAssets.length);
+    const shortenAddress = (addr) => {
+        return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
     };
 
-    const filteredAssets = selectedCategory === 'All'
-        ? allAssets
-        : assetCategories.find(cat => cat.name === selectedCategory)?.assets || [];
+    const collectAsset = (asset) => {
+        if (!isConnected) {
+            alert("Please connect your wallet first!");
+            return;
+        }
 
-    const current = filteredAssets[currentIndex % (filteredAssets.length || 1)] || allAssets[0];
+        setCurrentCollectingAsset(asset);
+        setIsCollecting(true);
+        setCollectionProgress(0);
 
-    // Check if collection is complete
-    const isCollectionComplete = owned.length >= totalAssets;
+        const interval = setInterval(() => {
+            setCollectionProgress(prev => {
+                if (prev >= 100) {
+                    clearInterval(interval);
+                    return 100;
+                }
+                return prev + 10;
+            });
+        }, 1000);
 
-    // 🔐 Show Connect Wallet screen first
-    if (!account) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-800 text-white flex flex-col items-center justify-center p-6">
-                <div className="text-center max-w-md">
-                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500 mb-4">
-                        OnChain Unlock Game
-                    </h1>
-                    <p className="text-lg mb-8">Connect your wallet to start unlocking rare game assets</p>
+        setTimeout(() => {
+            clearInterval(interval);
+            setIsCollecting(false);
+            addProfileAsset(asset);
+            setCurrentCollectingAsset(null);
+        }, 10000);
+    };
 
-                    {isMetamaskInstalled ? (
-                        <button
-                            onClick={connectWallet}
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white py-3 px-8 rounded-lg font-medium transition-all"
-                        >
-                            Connect Wallet
-                        </button>
-                    ) : (
-                        <div className="bg-red-900/50 border border-red-700 rounded-lg p-4">
-                            <p className="text-red-200">MetaMask not detected. Please install it to continue.</p>
-                            <a
-                                href="https://metamask.io/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-indigo-300 hover:text-indigo-200 inline-block mt-2"
-                            >
-                                Install MetaMask
-                            </a>
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    }
+    const addProfileAsset = (asset) => {
+
+        console.log("Adding asset to profile:", asset);
+        alert(`${asset.name} collected successfully!`);
+    };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-800 text-white p-6">
-            <div className="max-w-7xl mx-auto">
-                <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500">
-                            OnChain Unlock Game
-                        </h1>
-                        <p className="text-sm text-gray-400">Connected: {account.slice(0, 6)}...{account.slice(-4)}</p>
-                    </div>
+        <div className={`${outfit.className} text-white min-h-screen flex flex-col`}>
+            <div className="fixed inset-0 -z-10">
+                <Image
+                    src={GameBg}
+                    alt="Game Background"
+                    layout="fill"
+                    objectFit="cover"
+                    quality={100}
+                    className="opacity-90"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/80 to-purple-900/80"></div>
+            </div>
 
-                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-                        <div className="bg-gray-800 px-4 py-2 rounded-full">
-                            <span className="text-gray-400">Collection:</span> {owned.length}/{totalAssets}
-                        </div>
-
-                        <div className="relative">
-                            <select
-                                value={selectedCategory}
-                                onChange={(e) => {
-                                    setSelectedCategory(e.target.value);
-                                    setCurrentIndex(0);
-                                }}
-                                className="bg-gray-800 border border-gray-700 text-white rounded-full pl-4 pr-8 py-2 appearance-none focus:outline-none"
-                            >
-                                <option value="All">All Categories</option>
-                                {assetCategories.map(category => (
-                                    <option key={category.name} value={category.name}>
-                                        {category.name} ({category.assets.length})
-                                    </option>
-                                ))}
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                <AnimatePresence mode="wait">
-                    {isCollectionComplete ? (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-center py-20"
+            <div className="flex-grow">
+                <div className="min-h-screen px-4 sm:px-8 lg:px-20 py-12 relative z-10">
+                    <div className="flex justify-between items-center mb-8">
+                        <button
+                            onClick={() => router.back()}
+                            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg px-4 py-2 transition-colors"
                         >
-                            <div className="inline-block p-8 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700 shadow-xl max-w-2xl">
-                                <div className="text-6xl mb-6">🏆</div>
-                                <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500">
-                                    Collection Complete!
-                                </h2>
-                                <p className="text-xl mb-6">You have unlocked all {totalAssets} assets!</p>
+                            <FiArrowLeft />
+                            <span>Back</span>
+                        </button>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8">
-                                    {allAssets.map(asset => (
-                                        <div key={asset.id} className={`p-2 rounded-lg border ${owned.includes(asset.id) ? 'border-green-500 bg-green-900/20' : 'border-gray-700 bg-gray-800/50'}`}>
-                                            <div className="h-12 w-12 mx-auto mb-2 flex items-center justify-center">
-                                                <span className="text-2xl">{asset.image.startsWith('/') ? '🖼️' : asset.image}</span>
-                                            </div>
-                                            <p className="text-xs truncate">{asset.name}</p>
-                                        </div>
-                                    ))}
-                                </div>
+                        <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                            Dummy Game
+                        </h1>
+
+                        {isConnected ? (
+                            <div className="flex items-center space-x-4">
 
                                 <button
-                                    onClick={() => {
-                                        setCurrentIndex(0);
-                                        setSelectedCategory('All');
-                                        setOwned([]);
-                                    }}
-                                    className="bg-indigo-600 hover:bg-indigo-500 text-white py-3 px-8 rounded-lg font-medium transition-all w-full max-w-xs"
+                                    onClick={disconnectWallet}
+                                    className="bg-indigo-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition w-36"
                                 >
-                                    Start New Game
+                                    <span className="">{shortenAddress(account)}</span>
                                 </button>
                             </div>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key={current?.id || 'empty'}
-                            initial={{ opacity: 0, x: 50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -50 }}
-                            transition={{ duration: 0.3 }}
-                            className="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden shadow-2xl"
-                        >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-                                <div className="flex flex-col items-center justify-center">
-                                    <div className="relative w-64 h-64 bg-gray-900 rounded-lg border border-gray-700 flex items-center justify-center mb-4">
-                                        <div className={`absolute inset-0 ${current?.rarityColor || 'bg-gray-400'} opacity-20 rounded-lg`}></div>
-                                        {current?.image ? (
-                                            <div className="relative z-10 max-h-56 max-w-56 flex items-center justify-center">
-                                                <Image
-                                                    src={current.image}
-                                                    alt={current.name}
-                                                    width={200}
-                                                    height={200}
-                                                    className="object-contain"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="relative z-10 max-h-56 max-w-56 flex items-center justify-center">
-                                                <span className="text-6xl">❓</span>
-                                            </div>
-                                        )}
+                        ) : (
+                            <button
+                                onClick={connectWallet}
+                                className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm transition w-36"
+                            >
+                                Connect Wallet
+                            </button>
+                        )}
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 mb-8 border border-blue-400/30">
+                        <h2 className="text-2xl font-bold mb-4 text-blue-300">Welcome to Dummy Game!</h2>
+                        <p className="mb-4">
+                            Defeat enemies, complete quests, and collect rare items that you can own as NFTs.
+                            The items you collect here will appear in your profile collection.
+                        </p>
+
+                    </div>
+                    <h2 className="text-2xl font-bold mb-6 text-center">Available Loot</h2>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+                        {gameAssets.map((asset) => {
+                            const isCurrentAssetCollecting = isCollecting && currentCollectingAsset?.id === asset.id;
+
+                            return (
+                                <div
+                                    key={asset.id}
+                                    className="border rounded-lg shadow-lg space-y-3 px-3 py-4 w-full max-w-xs bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-md border-white/10 hover:border-blue-500 transition-colors relative"
+                                >
+                                    <div className="relative w-full h-48 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
+                                        <Image
+                                            src={asset.image}
+                                            alt={asset.name}
+                                            className="object-contain h-32 w-32"
+                                        />
+                                        <span className={`absolute top-2 right-2 text-xs px-2 py-1 rounded-md font-semibold ${asset.rarity === "Legendary" ? "bg-purple-900/80 text-purple-200" :
+                                                asset.rarity === "Epic" ? "bg-blue-900/80 text-blue-200" :
+                                                    asset.rarity === "Rare" ? "bg-green-900/80 text-green-200" :
+                                                        "bg-gray-800/80 text-gray-300"
+                                            }`}>
+                                            {asset.rarity}
+                                        </span>
                                     </div>
 
-                                    <div className="w-full max-w-xs">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <span className="text-sm text-gray-400">{current?.category || 'Unknown'}</span>
-                                            <span className="text-sm font-medium">{current?.ethValue || 0} ETH</span>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2">
-                                            <div
-                                                className={`h-2 rounded-full ${current?.rarityColor || 'bg-gray-400'}`}
-                                                style={{ width: `${progress}%` }}
-                                            ></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col justify-between">
                                     <div>
-                                        <h2 className="text-3xl font-bold mb-2">{current?.name || 'No Asset Found'}</h2>
-                                        <p className="text-gray-300 mb-4">{current?.description || 'Please select a different category'}</p>
-
-                                        {current?.category && (
-                                            <div className={`inline-block px-3 py-1 rounded-full text-sm mb-6 ${current.rarityColor}`}>
-                                                {current.category}
-                                            </div>
-                                        )}
+                                        <h3 className="font-semibold text-white text-lg">{asset.name}</h3>
+                                        <p className="text-sm text-gray-400 line-clamp-2">{asset.description}</p>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        {isUnlocking ? (
-                                            <div className="text-center">
-                                                <p className="text-xl mb-2">Unlocking in {timeLeft}s...</p>
-                                                <div className="w-full bg-gray-700 rounded-full h-3">
-                                                    <div
-                                                        className="h-3 rounded-full bg-indigo-500 transition-all duration-1000 ease-linear"
-                                                        style={{ width: `${progress}%` }}
-                                                    ></div>
-                                                </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1 text-sm text-green-400">
+                                            <FaEthereum className="text-green-400 w-5 h-5" />
+                                            <div className="flex flex-col">
+                                                <span className="text-xs text-gray-400">Price</span>
+                                                <span className="font-semibold text-white">{asset.price} ETH</span>
                                             </div>
-                                        ) : showOwnButton ? (
-                                            <button
-                                                onClick={ownAsset}
-                                                className="w-full bg-green-600 hover:bg-green-500 text-white py-3 px-6 rounded-lg font-medium transition-all"
-                                            >
-                                                Claim Asset
-                                            </button>
+                                        </div>
+                                        <span className="text-xs text-gray-400 bg-black/30 px-2 py-1 rounded">
+                                            {asset.category}
+                                        </span>
+                                    </div>
+
+                                    <button
+                                        onClick={() => collectAsset(asset)}
+                                        disabled={isCollecting}
+                                        className={`w-full mt-3 py-2 rounded-md font-medium transition-colors flex items-center justify-center gap-2 ${isCurrentAssetCollecting
+                                                ? "bg-blue-700 cursor-not-allowed"
+                                                : "bg-blue-600 hover:bg-blue-700"
+                                            } ${isCollecting && !isCurrentAssetCollecting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                    >
+                                        {isCurrentAssetCollecting ? (
+                                            <>
+                                                <FaSpinner className="animate-spin" />
+                                                <span>Collecting ({collectionProgress}%)</span>
+                                            </>
                                         ) : (
-                                            <button
-                                                onClick={unlockAsset}
-                                                disabled={!current || owned.includes(current.id)}
-                                                className={`w-full py-3 px-6 rounded-lg font-medium transition-all ${!current || owned.includes(current.id)
-                                                        ? 'bg-gray-600 cursor-not-allowed'
-                                                        : 'bg-indigo-600 hover:bg-indigo-500'
-                                                    }`}
-                                            >
-                                                {!current ? 'No Asset' : owned.includes(current.id) ? 'Already Owned' : 'Unlock Asset'}
-                                            </button>
+                                            "Collect Now"
                                         )}
-                                    </div>
+                                    </button>
                                 </div>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                            );
+                        })}
+                    </div>
+                </div>
             </div>
         </div>
     );
