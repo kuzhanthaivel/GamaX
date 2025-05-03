@@ -1,91 +1,19 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../assets/logo.png";
+import { useWallet } from "@/context/WalletContext";
 
 export default function Header() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [account, setAccount] = useState(null);
-  const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (typeof window.ethereum !== "undefined") {
-      setIsMetaMaskInstalled(true);
-      checkConnection();
-
-      window.ethereum.on("accountsChanged", handleAccountsChanged);
-      window.ethereum.on("chainChanged", () => window.location.reload());
-
-      return () => {
-        if (window.ethereum.removeListener) {
-          window.ethereum.removeListener(
-            "accountsChanged",
-            handleAccountsChanged
-          );
-          window.ethereum.removeListener("chainChanged", () =>
-            window.location.reload()
-          );
-        }
-      };
-    }
-  }, []);
-
-  const checkConnection = async () => {
-    try {
-      const accounts = await window.ethereum.request({
-        method: "eth_accounts",
-      });
-      if (accounts.length > 0) {
-        setIsConnected(true);
-        setAccount(accounts[0]);
-      }
-    } catch (error) {
-      console.error("Error checking connection:", error);
-    }
-  };
-
-  const handleAccountsChanged = (accounts) => {
-    if (accounts.length === 0) {
-      setIsConnected(false);
-      setAccount(null);
-    } else {
-      setIsConnected(true);
-      setAccount(accounts[0]);
-    }
-  };
-
-  const connectWallet = async () => {
-    if (!isMetaMaskInstalled) {
-      alert("Please install MetaMask to connect your wallet!");
-      window.open("https://metamask.io/download.html", "_blank");
-      return;
-    }
-
-    try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      setIsConnected(true);
-      setAccount(accounts[0]);
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      if (error.code === 4001) {
-        alert("Please connect to MetaMask to continue.");
-      }
-    }
-  };
-
-  const disconnectWallet = () => {
-    setIsConnected(false);
-    setAccount(null);
-  };
-
-  const shortenAddress = (addr) => {
-    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
-  };
+  const {
+    isConnected,
+    account,
+    connectWallet,
+    disconnectWallet,
+    shortenAddress,
+  } = useWallet();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -198,4 +126,4 @@ export default function Header() {
       </div>
     </header>
   );
-}
+} 

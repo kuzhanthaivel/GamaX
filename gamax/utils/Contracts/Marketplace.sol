@@ -1,4 +1,4 @@
-
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 contract MarketPlace {
@@ -9,7 +9,6 @@ contract MarketPlace {
         string category;
         string price;
         string gameName;
-        string gameProfile;
         string assetImage;
         string description;
         string rarities;
@@ -25,7 +24,6 @@ contract MarketPlace {
         string category,
         string price,
         string gameName,
-        string gameProfile,
         string assetImage,
         string description,
         string rarities,
@@ -38,42 +36,51 @@ contract MarketPlace {
         string status
     );
 
+    event AssetStatusUpdated(uint256 indexed assetId, string status);
+
+    modifier onlySeller(uint256 _assetId) {
+        require(_assetId < assets.length, "Asset does not exist");
+        require(
+            msg.sender == assets[_assetId].seller,
+            "Only seller can perform this action"
+        );
+        _;
+    }
+
     function addAsset(
-        address _seller,
         string memory _assetName,
         string memory _category,
         string memory _price,
         string memory _gameName,
-        string memory _gameProfile,
         string memory _assetImage,
         string memory _description,
         string memory _rarities,
         string memory _status
     ) public {
         uint256 assetId = assets.length;
-        
-        assets.push(Asset(
-            address(0),
-            _seller,
-            _assetName,
-            _category,
-            _price,
-            _gameName,
-            _gameProfile,
-            _assetImage,
-            _description,
-            _rarities,
-            _status
-        ));
+
+        assets.push(
+            Asset(
+                address(0),
+                msg.sender,
+                _assetName,
+                _category,
+                _price,
+                _gameName,
+                _assetImage,
+                _description,
+                _rarities,
+                _status
+            )
+        );
 
         emit AssetAdded(
             assetId,
-            _seller,
+            msg.sender,
             _assetName,
             _category,
             _price,
             _gameName,
-            _gameProfile,
             _assetImage,
             _description,
             _rarities,
@@ -85,20 +92,25 @@ contract MarketPlace {
         return assets;
     }
 
-    function updateAssetStatus(
+    function updateAssetStatusandBuyer(
         uint256 _assetId,
         address _buyer,
         string memory _status
-    ) public {
-        require(_assetId < assets.length, "Asset does not exist");
-        
+    ) public onlySeller(_assetId) {
+        require(_buyer != assets[_assetId].seller, "Seller cannot be buyer");
+
         assets[_assetId].buyer = _buyer;
         assets[_assetId].status = _status;
 
-        emit AssetUpdated(
-            _assetId,
-            _buyer,
-            _status
-        );
+        emit AssetUpdated(_assetId, _buyer, _status);
+    }
+
+    function updateAssetStatus(
+        uint256 _assetId,   
+        string memory _status
+    ) public onlySeller(_assetId) {
+        assets[_assetId].status = _status;
+
+        emit AssetStatusUpdated(_assetId, _status);
     }
 }

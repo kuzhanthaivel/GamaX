@@ -8,7 +8,6 @@ contract UserProfile {
         string category;
         string price;
         string gameName;
-        string gameProfile;
         string assetImage;
         string description;
         string rarities;
@@ -24,7 +23,6 @@ contract UserProfile {
         string category,
         string price,
         string gameName,
-        string gameProfile,
         string assetImage,
         string description,
         string rarities,
@@ -42,7 +40,6 @@ contract UserProfile {
         string memory _category,
         string memory _price,
         string memory _gameName,
-        string memory _gameProfile,
         string memory _assetImage,
         string memory _description,
         string memory _rarities,
@@ -56,7 +53,6 @@ contract UserProfile {
             _category,
             _price,
             _gameName,
-            _gameProfile,
             _assetImage,
             _description,
             _rarities,
@@ -70,7 +66,6 @@ contract UserProfile {
             _category,
             _price,
             _gameName,
-            _gameProfile,
             _assetImage,
             _description,
             _rarities,

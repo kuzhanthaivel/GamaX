@@ -30,11 +30,6 @@ const profileContractABI = [
 			},
 			{
 				"internalType": "string",
-				"name": "_gameProfile",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
 				"name": "_assetImage",
 				"type": "string"
 			},
@@ -96,12 +91,6 @@ const profileContractABI = [
 				"indexed": false,
 				"internalType": "string",
 				"name": "gameName",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "gameProfile",
 				"type": "string"
 			},
 			{
@@ -202,11 +191,6 @@ const profileContractABI = [
 					},
 					{
 						"internalType": "string",
-						"name": "gameProfile",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
 						"name": "assetImage",
 						"type": "string"
 					},
@@ -236,7 +220,7 @@ const profileContractABI = [
 	}
 ]
 
-const profileContractAddress = "0xc89fa65478Ca94804079ff6Dd9A68bEfb974CDa8"; 
+const profileContractAddress = "0xf16d5017058348B7E7093a1433D73a2161e6c03D"; 
 
 export const getProfileContract = () => {
   if (!window.ethereum) {
@@ -257,7 +241,6 @@ export const addProfile = async (profileData) => {
     profileData.category,
     profileData.price,
     profileData.gameName,
-    profileData.gameProfile,
     profileData.assetImage,
     profileData.description,
     profileData.rarities,

@@ -4,11 +4,6 @@ const contractABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_seller",
-				"type": "address"
-			},
-			{
 				"internalType": "string",
 				"name": "_assetName",
 				"type": "string"
@@ -26,11 +21,6 @@ const contractABI = [
 			{
 				"internalType": "string",
 				"name": "_gameName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_gameProfile",
 				"type": "string"
 			},
 			{
@@ -101,12 +91,6 @@ const contractABI = [
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "gameProfile",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
 				"name": "assetImage",
 				"type": "string"
 			},
@@ -142,6 +126,25 @@ const contractABI = [
 				"type": "uint256"
 			},
 			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "status",
+				"type": "string"
+			}
+		],
+		"name": "AssetStatusUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "assetId",
+				"type": "uint256"
+			},
+			{
 				"indexed": true,
 				"internalType": "address",
 				"name": "buyer",
@@ -165,6 +168,24 @@ const contractABI = [
 				"type": "uint256"
 			},
 			{
+				"internalType": "string",
+				"name": "_status",
+				"type": "string"
+			}
+		],
+		"name": "updateAssetStatus",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_assetId",
+				"type": "uint256"
+			},
+			{
 				"internalType": "address",
 				"name": "_buyer",
 				"type": "address"
@@ -175,7 +196,7 @@ const contractABI = [
 				"type": "string"
 			}
 		],
-		"name": "updateAssetStatus",
+		"name": "updateAssetStatusandBuyer",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -218,11 +239,6 @@ const contractABI = [
 					},
 					{
 						"internalType": "string",
-						"name": "gameProfile",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
 						"name": "assetImage",
 						"type": "string"
 					},
@@ -250,8 +266,9 @@ const contractABI = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-];
-const contractAddress = "0xFe72508c2002803e7fA7c26f8e156E8cbEa7241d";
+]
+
+const contractAddress = "0xf2239ab8dC1d360EBf1D59209EAdce43C0D88b8A";
 
 export const getContract = () => {
   if (!window.ethereum) {
@@ -267,12 +284,10 @@ export const getContract = () => {
 export const addAsset = async (assetData) => {
   const contract = getContract();
   const tx = await contract.addAsset(
-    assetData.seller,
     assetData.assetName,
     assetData.category,
     assetData.price,
     assetData.gameName,
-    assetData.gameProfile,
     assetData.assetImage,
     assetData.description,
     assetData.rarities,
@@ -288,9 +303,16 @@ export const getAllAssets = async () => {
   return assets;
 };
 
-export const purchaseAsset = async (index, buyer, status) => {
+export const updateAssetStatus = async (assetIndex, status) => {
   const contract = getContract();
-  const tx = await contract.updateStatusAndBuyerByIndex(index, buyer, status);
+  const tx = await contract.updateAssetStatus(assetIndex, status);
+  await tx.wait();
+  return tx;
+};
+
+export const updateAssetStatusAndBuyer = async (assetIndex, buyer, status) => {
+  const contract = getContract();
+  const tx = await contract.updateAssetStatusandBuyer(assetIndex, buyer, status);
   await tx.wait();
   return tx;
 };
