@@ -1,3 +1,4 @@
+"use client";
 import { FaSearch } from "react-icons/fa";
 import Header from '../../components/header'
 import Footer from '../../components/footer'
@@ -14,6 +15,7 @@ import { SiOpenbadges } from "react-icons/si";
 import { FiDatabase } from "react-icons/fi";
 import { PiGraphLight } from "react-icons/pi";
 import { FaEthereum } from "react-icons/fa";
+import { useState, useEffect } from 'react';
 
 import SteelSword from '../../assets/Gameassets/SteelSword.png';
 import ElvenBow from '../../assets/Gameassets/Elven_Bow.png';
@@ -28,13 +30,11 @@ import SpeedDraught from '../../assets/Gameassets/Speed_Draught.png';
 import RingOfPower from '../../assets/Gameassets/Ring_of_Power.png';
 import AncientScroll from '../../assets/Gameassets/Ancient_Scroll.png';
 
-
 const outfit = Outfit({
   subsets: ["latin"],
   weight: "400",
 });
 
-// Updated categories array with icons
 const categories = [
   { name: "Character", icon: <CgGhostCharacter className="mr-2 w-7 h-7" /> },
   { name: "Character Skins", icon: <AiOutlineFormatPainter className="mr-2 w-7 h-7" /> },
@@ -50,8 +50,8 @@ const categories = [
   { name: "Coins & Tokens", icon: <PiGraphLight className="mr-2 w-7 h-7" /> }
 ];
 
-// Game assets data with corresponding images
-const assets = [
+
+const allAssets = [
   {
     id: 1,
     name: "Steel Sword",
@@ -175,6 +175,33 @@ const assets = [
 ];
 
 export default function Marketplace() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [filteredAssets, setFilteredAssets] = useState(allAssets);
+
+  useEffect(() => {
+    let result = allAssets;
+
+    if (searchTerm) {
+      result = result.filter(asset => 
+        asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        asset.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        asset.game.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Apply category filter
+    if (selectedCategory) {
+      result = result.filter(asset => asset.category === selectedCategory);
+    }
+    
+    setFilteredAssets(result);
+  }, [searchTerm, selectedCategory]);
+
+  const handleCategoryClick = (categoryName) => {
+    setSelectedCategory(selectedCategory === categoryName ? null : categoryName);
+  };
+
   return (
     <div className={`${outfit.className} text-white min-h-screen flex flex-col`}>
       {/* Full-page background */}
@@ -204,6 +231,8 @@ export default function Marketplace() {
                 type="text"
                 placeholder="Search for assets..."
                 className="bg-transparent outline-none w-full placeholder-[#6D737A]"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
               <FaSearch className="text-gray-400 ml-2" />
             </div>
@@ -216,7 +245,12 @@ export default function Marketplace() {
             {categories.map((cat, idx) => (
               <button
                 key={idx}
-                className="flex items-center bg-[#111] px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition text-lg text-[#6D737A]"
+                className={`flex items-center px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition text-lg ${
+                  selectedCategory === cat.name 
+                    ? "bg-indigo-600 text-white" 
+                    : "bg-[#111] text-[#6D737A]"
+                }`}
+                onClick={() => handleCategoryClick(cat.name)}
               >
                 {cat.icon}
                 {cat.name}
@@ -227,63 +261,70 @@ export default function Marketplace() {
 
         {/* Asset Cards Section */}
         <section className="px-24 py-10 relative z-10">
-          <div className="grid xl:grid-cols-4 grid-cols-3 gap-8">
-            {assets.map((asset) => (
-              <div 
-                key={asset.id}
-                className="border rounded-md shadow-lg text-[#6D737A] font-sans space-y-2 px-3 py-4 w-64 bg-white/10 backdrop-blur-md border-white/10 hover:border-indigo-500 transition-colors"
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src={Profile1}
-                      alt="Game Logo"
-                      className="w-6 h-6 rounded-full"
-                    />
-                    <span className="font-medium">{asset.game}</span>
-                  </div>
-                </div>
-
-                {/* Image with rarity badge */}
-                <div className="relative w-full h-56 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
-                  <Image 
-                    src={asset.image} 
-                    alt={asset.name}
-                    className="object-contain h-40 w-40"
-                  />
-                  <span className={`absolute top-2 right-2 text-xs px-3 py-1 rounded-md font-semibold ${
-                    asset.rarity === "Legendary" ? "bg-purple-900 text-purple-200" :
-                    asset.rarity === "Epic" ? "bg-blue-900 text-blue-200" :
-                    asset.rarity === "Rare" ? "bg-green-900 text-green-200" :
-                    "bg-gray-800 text-gray-300"
-                  }`}>
-                    {asset.rarity}
-                  </span>
-                </div>
-
-                {/* Info */}
-                <div>
-                  <h3 className="font-semibold text-white">{asset.name}</h3>
-                  <p className="text-sm text-gray-400 line-clamp-2">{asset.description}</p>
-                </div>
-
-                {/* Price & Buy Button */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-sm text-green-400">
-                    <FaEthereum className="text-green-400 w-7 h-7" />
-                    <div className="flex flex-col">
-                      <span className="text-sm">Price</span>
-                      <span className="font-semibold text-white">{asset.price} ETH</span>
+          {filteredAssets.length === 0 ? (
+            <div className="text-center py-20">
+              <h3 className="text-2xl font-bold mb-4">No assets found</h3>
+              <p className="text-[#6D737A]">Try adjusting your search or category filter</p>
+            </div>
+          ) : (
+            <div className="grid xl:grid-cols-4 grid-cols-3 gap-8">
+              {filteredAssets.map((asset) => (
+                <div 
+                  key={asset.id}
+                  className="border rounded-md shadow-lg text-[#6D737A] font-sans space-y-2 px-3 py-4 w-64 bg-white/10 backdrop-blur-md border-white/10 hover:border-indigo-500 transition-colors"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src={Profile1}
+                        alt="Game Logo"
+                        className="w-6 h-6 rounded-full"
+                      />
+                      <span className="font-medium">{asset.game}</span>
                     </div>
                   </div>
-                  <button className="bg-blue-900 hover:bg-blue-800 text-white text-sm px-5 py-2 rounded-md font-semibold transition-colors">
-                    Buy
-                  </button>
+
+                  {/* Image with rarity badge */}
+                  <div className="relative w-full h-56 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
+                    <Image 
+                      src={asset.image} 
+                      alt={asset.name}
+                      className="object-contain h-40 w-40"
+                    />
+                    <span className={`absolute top-2 right-2 text-xs px-3 py-1 rounded-md font-semibold ${
+                      asset.rarity === "Legendary" ? "bg-purple-900 text-purple-200" :
+                      asset.rarity === "Epic" ? "bg-blue-900 text-blue-200" :
+                      asset.rarity === "Rare" ? "bg-green-900 text-green-200" :
+                      "bg-gray-800 text-gray-300"
+                    }`}>
+                      {asset.rarity}
+                    </span>
+                  </div>
+
+                  {/* Info */}
+                  <div>
+                    <h3 className="font-semibold text-white">{asset.name}</h3>
+                    <p className="text-sm text-gray-400 line-clamp-2">{asset.description}</p>
+                  </div>
+
+                  {/* Price & Buy Button */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-sm text-green-400">
+                      <FaEthereum className="text-green-400 w-7 h-7" />
+                      <div className="flex flex-col">
+                        <span className="text-sm">Price</span>
+                        <span className="font-semibold text-white">{asset.price} ETH</span>
+                      </div>
+                    </div>
+                    <button className="bg-blue-900 hover:bg-blue-800 text-white text-sm px-5 py-2 rounded-md font-semibold transition-colors">
+                      Buy
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
 
