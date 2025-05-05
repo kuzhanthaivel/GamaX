@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Outfit } from 'next/font/google';
 import GameBg from '../../assets/Bg.jpg';
-import { FaEthereum, FaSpinner } from "react-icons/fa";
+import { FaEthereum, FaSpinner, FaCheck } from "react-icons/fa";
 import { FiArrowLeft } from "react-icons/fi";
+import { addAsset, viewAllAssets } from '../../utils/contractintegration/Contract';
 
-// Import game assets
 import SteelSword from '../../assets/Gameassets/SteelSword.png';
 import ElvenBow from '../../assets/Gameassets/Elven_Bow.png';
 import FlameStaff from '../../assets/Gameassets/Flame_Staff.png';
@@ -145,6 +145,9 @@ export default function DummyGame() {
     const [isConnected, setIsConnected] = useState(false);
     const [account, setAccount] = useState(null);
     const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
+    const [ownedAssets, setOwnedAssets] = useState([]);
+    const [notification, setNotification] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (typeof window.ethereum !== 'undefined') {
@@ -163,6 +166,12 @@ export default function DummyGame() {
         }
     }, []);
 
+    useEffect(() => {
+        if (account) {
+            checkOwnership();
+        }
+    }, [account]);
+
     const checkConnection = async () => {
         try {
             const accounts = await window.ethereum.request({ method: 'eth_accounts' });
@@ -179,6 +188,7 @@ export default function DummyGame() {
         if (accounts.length === 0) {
             setIsConnected(false);
             setAccount(null);
+            setOwnedAssets([]);
         } else {
             setIsConnected(true);
             setAccount(accounts[0]);
@@ -198,10 +208,11 @@ export default function DummyGame() {
             });
             setIsConnected(true);
             setAccount(accounts[0]);
+            showNotification('Wallet connected successfully!');
         } catch (error) {
             console.error('Error connecting wallet:', error);
             if (error.code === 4001) {
-                alert('Please connect to MetaMask to continue.');
+                showNotification('Please connect to MetaMask to continue.', true);
             }
         }
     };
@@ -209,15 +220,47 @@ export default function DummyGame() {
     const disconnectWallet = () => {
         setIsConnected(false);
         setAccount(null);
+        setOwnedAssets([]);
+        showNotification('Wallet disconnected');
     };
 
-    const shortenAddress = (addr) => {
-        return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+    const showNotification = (message, isError = false) => {
+        setNotification({ message, isError });
+        setTimeout(() => setNotification(null), 5000);
     };
 
-    const collectAsset = (asset) => {
+    const checkOwnership = async () => {
+        try {
+            setIsLoading(true);
+            const assets = await viewAllAssets();
+            const myAssets = assets.filter(
+                asset =>
+                    asset.seller.toLowerCase() === account.toLowerCase() &&
+                    asset.ProfileStatus === "Active"
+            );
+            setOwnedAssets(myAssets);
+        } catch (error) {
+            console.error("Error checking ownership:", error);
+            showNotification('Failed to check asset ownership', true);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const collectAsset = async (asset) => {
         if (!isConnected) {
-            alert("Please connect your wallet first!");
+            showNotification("Please connect your wallet first!", true);
+            return;
+        }
+
+        const isOwned = ownedAssets.some(
+            owned =>
+                owned.assetName === asset.name &&
+                owned.ProfileStatus === "Active"
+        );
+
+        if (isOwned) {
+            showNotification("You already own this asset!", true);
             return;
         }
 
@@ -227,26 +270,49 @@ export default function DummyGame() {
 
         const interval = setInterval(() => {
             setCollectionProgress(prev => {
-                if (prev >= 100) {
+                if (prev >= 90) {
                     clearInterval(interval);
-                    return 100;
+                    return 90;
                 }
                 return prev + 10;
             });
-        }, 1000);
+        }, 300);
 
-        setTimeout(() => {
-            clearInterval(interval);
-            setIsCollecting(false);
-            addProfileAsset(asset);
-            setCurrentCollectingAsset(null);
-        }, 10000);
+        try {
+            const assetData = {
+                assetName: asset.name,
+                category: asset.category,
+                assetImage: asset.image.src,
+                price: asset.price,
+                gameName: "Dummy Game",
+                description: asset.description,
+                rarities: asset.rarity,
+            };
+
+            setIsLoading(true);
+            const tx = await addAsset(assetData);
+            showNotification(`Transaction sent: ${tx.hash}`);
+
+            await tx.wait();
+            showNotification(`${asset.name} collected successfully!`);
+
+            await checkOwnership();
+
+            setCollectionProgress(100);
+        } catch (error) {
+            console.error("Error collecting asset:", error);
+            showNotification(`Failed to collect asset: ${error.message}`, true);
+        } finally {
+            setTimeout(() => {
+                setIsCollecting(false);
+                setIsLoading(false);
+                setCurrentCollectingAsset(null);
+            }, 1000);
+        }
     };
 
-    const addProfileAsset = (asset) => {
-
-        console.log("Adding asset to profile:", asset);
-        alert(`${asset.name} collected successfully!`);
+    const shortenAddress = (addr) => {
+        return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
     };
 
     return (
@@ -262,6 +328,20 @@ export default function DummyGame() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-900/80 to-purple-900/80"></div>
             </div>
+
+            {notification && (
+                <div className={`fixed bottom-4 right-4 px-4 py-2 rounded-md shadow-lg z-50 ${notification.isError ? 'bg-red-500' : 'bg-green-500'
+                    } text-white flex items-center gap-2 animate-fade-in`}>
+                    {notification.isError ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                    ) : (
+                        <FaCheck className="h-5 w-5" />
+                    )}
+                    <span>{notification.message}</span>
+                </div>
+            )}
 
             <div className="flex-grow">
                 <div className="min-h-screen px-4 sm:px-8 lg:px-20 py-12 relative z-10">
@@ -280,7 +360,6 @@ export default function DummyGame() {
 
                         {isConnected ? (
                             <div className="flex items-center space-x-4">
-
                                 <button
                                     onClick={disconnectWallet}
                                     className="bg-indigo-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition w-36"
@@ -303,19 +382,35 @@ export default function DummyGame() {
                             Defeat enemies, complete quests, and collect rare items that you can own as NFTs.
                             The items you collect here will appear in your profile collection.
                         </p>
-
+                        {isConnected && (
+                            <p className="text-sm text-blue-200">
+                                You own {ownedAssets.length} assets in this game
+                            </p>
+                        )}
                     </div>
                     <h2 className="text-2xl font-bold mb-6 text-center">Available Loot</h2>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
                         {gameAssets.map((asset) => {
                             const isCurrentAssetCollecting = isCollecting && currentCollectingAsset?.id === asset.id;
+                            const isOwned = ownedAssets.some(
+                                owned =>
+                                    owned.assetName === asset.name &&
+                                    owned.ProfileStatus === "Active"
+                            );
 
                             return (
                                 <div
                                     key={asset.id}
-                                    className="border rounded-lg shadow-lg space-y-3 px-3 py-4 w-full max-w-xs bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-md border-white/10 hover:border-blue-500 transition-colors relative"
+                                    className={`border rounded-lg shadow-lg space-y-3 px-3 py-4 w-full max-w-xs bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-md ${isOwned ? 'border-green-500/50' : 'border-white/10 hover:border-blue-500'
+                                        } transition-colors relative`}
                                 >
+                                    {isOwned && (
+                                        <div className="absolute top-2 z-40 left-2 bg-green-500/90 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                                            <FaCheck className="text-xs" />
+                                            <span>OWNED</span>
+                                        </div>
+                                    )}
                                     <div className="relative w-full h-48 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
                                         <Image
                                             src={asset.image}
@@ -323,9 +418,9 @@ export default function DummyGame() {
                                             className="object-contain h-32 w-32"
                                         />
                                         <span className={`absolute top-2 right-2 text-xs px-2 py-1 rounded-md font-semibold ${asset.rarity === "Legendary" ? "bg-purple-900/80 text-purple-200" :
-                                                asset.rarity === "Epic" ? "bg-blue-900/80 text-blue-200" :
-                                                    asset.rarity === "Rare" ? "bg-green-900/80 text-green-200" :
-                                                        "bg-gray-800/80 text-gray-300"
+                                            asset.rarity === "Epic" ? "bg-blue-900/80 text-blue-200" :
+                                                asset.rarity === "Rare" ? "bg-green-900/80 text-green-200" :
+                                                    "bg-gray-800/80 text-gray-300"
                                             }`}>
                                             {asset.rarity}
                                         </span>
@@ -351,19 +446,32 @@ export default function DummyGame() {
 
                                     <button
                                         onClick={() => collectAsset(asset)}
-                                        disabled={isCollecting}
-                                        className={`w-full mt-3 py-2 rounded-md font-medium transition-colors flex items-center justify-center gap-2 ${isCurrentAssetCollecting
-                                                ? "bg-blue-700 cursor-not-allowed"
-                                                : "bg-blue-600 hover:bg-blue-700"
-                                            } ${isCollecting && !isCurrentAssetCollecting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                        disabled={isCollecting || isLoading || isOwned}
+                                        className={`w-full mt-3 py-2 rounded-md font-medium transition-colors flex items-center justify-center gap-2 ${isOwned
+                                                ? 'bg-green-600 cursor-default'
+                                                : isCurrentAssetCollecting
+                                                    ? 'bg-blue-700 cursor-not-allowed'
+                                                    : 'bg-blue-600 hover:bg-blue-700'
+                                            } ${(isCollecting && !isCurrentAssetCollecting) || isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                                            }`}
                                     >
-                                        {isCurrentAssetCollecting ? (
+                                        {isOwned ? (
+                                            <>
+                                                <FaCheck />
+                                                <span>Owned</span>
+                                            </>
+                                        ) : isCurrentAssetCollecting ? (
                                             <>
                                                 <FaSpinner className="animate-spin" />
                                                 <span>Collecting ({collectionProgress}%)</span>
                                             </>
+                                        ) : isLoading ? (
+                                            <>
+                                                <FaSpinner className="animate-spin" />
+                                                <span>Processing...</span>
+                                            </>
                                         ) : (
-                                            "Collect Now"
+                                            'Collect Now'
                                         )}
                                     </button>
                                 </div>

@@ -57,24 +57,6 @@ const marketContractABI = [
 				"internalType": "string",
 				"name": "rarities",
 				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "ProfileStatus",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "MarketStatus",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "TransactionStatus",
-				"type": "string"
 			}
 		],
 		"name": "AssetAdded",
@@ -104,19 +86,7 @@ const marketContractABI = [
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "ProfileStatus",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "MarketStatus",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "TransactionStatus",
+				"name": "price",
 				"type": "string"
 			}
 		],
@@ -157,11 +127,6 @@ const marketContractABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_seller",
-				"type": "address"
-			},
-			{
 				"internalType": "string",
 				"name": "_assetName",
 				"type": "string"
@@ -195,21 +160,6 @@ const marketContractABI = [
 				"internalType": "string",
 				"name": "_rarities",
 				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_ProfileStatus",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_MarketStatus",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_TransactionStatus",
-				"type": "string"
 			}
 		],
 		"name": "addAsset",
@@ -223,52 +173,9 @@ const marketContractABI = [
 				"internalType": "uint256",
 				"name": "_indexId",
 				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_buyer",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_ProfileStatus",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_MarketStatus",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_TransactionStatus",
-				"type": "string"
 			}
 		],
 		"name": "buyAsset",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_indexId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "_ProfileStatus",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_MarketStatus",
-				"type": "string"
-			}
-		],
-		"name": "sellAsset",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -282,13 +189,34 @@ const marketContractABI = [
 			},
 			{
 				"internalType": "string",
-				"name": "_ProfileStatus",
+				"name": "_newPrice",
 				"type": "string"
-			},
+			}
+		],
+		"name": "reSell",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
-				"internalType": "string",
-				"name": "_MarketStatus",
-				"type": "string"
+				"internalType": "uint256",
+				"name": "_indexId",
+				"type": "uint256"
+			}
+		],
+		"name": "sellAsset",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_indexId",
+				"type": "uint256"
 			}
 		],
 		"name": "unlistAsset",
@@ -373,14 +301,12 @@ const marketContractABI = [
 	}
 ]
 
-const marketContractAddress = "0xDBCad64624704E7884C91F18A46CDaDB0CBeBA9F"; 
+const marketContractAddress = "0xd60c8081f724488133d88d544451296fde1909cf";
 
-export const getMarketContract = () => {
+const getMarketContract = () => {
   if (!window.ethereum) {
-    alert("MetaMask is not installed!");
-    return null;
+    throw new Error("MetaMask is not installed!");
   }
-
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   return new ethers.Contract(marketContractAddress, marketContractABI, signer);
@@ -389,17 +315,13 @@ export const getMarketContract = () => {
 export const addAsset = async (assetData) => {
   const contract = getMarketContract();
   const tx = await contract.addAsset(
-    assetData.seller,
     assetData.assetName,
     assetData.category,
     assetData.assetImage,
     assetData.price,
     assetData.gameName,
     assetData.description,
-    assetData.rarities,
-    assetData.ProfileStatus,
-    assetData.MarketStatus,
-    assetData.TransactionStatus
+    assetData.rarities
   );
   await tx.wait();
   return tx;
@@ -407,42 +329,59 @@ export const addAsset = async (assetData) => {
 
 export const viewAllAssets = async () => {
   const contract = getMarketContract();
-  const assets = await contract.viewAllAssets();
-  return assets;
+  return await contract.viewAllAssets();
 };
 
-export const sellAsset = async (indexId, ProfileStatus, MarketStatus) => {
+export const getAsset = async (indexId) => {
   const contract = getMarketContract();
-  const tx = await contract.sellAsset(
-    indexId,
-    ProfileStatus,
-    MarketStatus
-  );
+  return await contract.getAsset(indexId);
+};
+
+export const sellAsset = async (indexId) => {
+  const contract = getMarketContract();
+  const tx = await contract.sellAsset(indexId);
   await tx.wait();
   return tx;
 };
 
-export const buyAsset = async (indexId, buyer, ProfileStatus, MarketStatus, TransactionStatus) => {
+// Fixed - removed payment since contract is non-payable
+export const buyAsset = async (indexId) => {
   const contract = getMarketContract();
-  const tx = await contract.buyAsset(
-    indexId,
-    buyer,
-    ProfileStatus,
-    MarketStatus,
-    TransactionStatus,
-    { value: ethers.utils.parseEther("0") } 
-  );
+  const tx = await contract.buyAsset(indexId); // No value parameter
   await tx.wait();
   return tx;
 };
 
-export const unlistAsset = async (indexId, ProfileStatus, MarketStatus) => {
+export const unlistAsset = async (indexId) => {
   const contract = getMarketContract();
-  const tx = await contract.unlistAsset(
-    indexId,
-    ProfileStatus,
-    MarketStatus
-  );
+  const tx = await contract.unlistAsset(indexId);
   await tx.wait();
   return tx;
+};
+
+// Fixed - added price parameter
+export const reSellAsset = async (indexId, newPrice) => {
+  const contract = getMarketContract();
+  const tx = await contract.reSell(indexId, newPrice);
+  await tx.wait();
+  return tx;
+};
+
+// Event listeners remain the same
+export const listenForAssetAdded = (callback) => {
+  const contract = getMarketContract();
+  contract.on("AssetAdded", callback);
+  return () => contract.off("AssetAdded", callback);
+};
+
+export const listenForAssetSold = (callback) => {
+  const contract = getMarketContract();
+  contract.on("AssetSold", callback);
+  return () => contract.off("AssetSold", callback);
+};
+
+export const listenForStatusUpdates = (callback) => {
+  const contract = getMarketContract();
+  contract.on("AssetStatusUpdated", callback);
+  return () => contract.off("AssetStatusUpdated", callback);
 };

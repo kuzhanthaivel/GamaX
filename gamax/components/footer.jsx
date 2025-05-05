@@ -1,6 +1,6 @@
 import {
   FaFacebookF,
-  FaPinterestP,
+  FaPinterestP, 
   FaDiscord,
   FaYoutube,
   FaTiktok,

@@ -8,238 +8,126 @@ import BgImage from "../../assets/Bg.jpg";
 import { FaEthereum } from "react-icons/fa";
 import { FiFilter, FiSearch, FiChevronDown, FiX } from "react-icons/fi";
 import { useState, useEffect } from "react";
-
-// Import game assets
-import SteelSword from '../../assets/Gameassets/SteelSword.png';
-import ElvenBow from '../../assets/Gameassets/Elven_Bow.png';
-import FlameStaff from '../../assets/Gameassets/Flame_Staff.png';
-import FrostAxe from '../../assets/Gameassets/Frost_Axe.png';
-import WoodenShield from '../../assets/Gameassets/Wooden_Shield.png';
-import LeatherArmor from '../../assets/Gameassets/Leather_Armor.png';
-import DragonHelm from '../../assets/Gameassets/Dragon_Helm.png';
-import HealthPotion from '../../assets/Gameassets/Health_Potion.png';
-import ManaElixir from '../../assets/Gameassets/Mana_Elixir.png';
-import SpeedDraught from '../../assets/Gameassets/Speed_Draught.png';
-import RingOfPower from '../../assets/Gameassets/Ring_of_Power.png';
-import AncientScroll from '../../assets/Gameassets/Ancient_Scroll.png';
+import { useWallet } from "@/context/WalletContext";
+import {
+  viewAllAssets,
+  sellAsset,
+  unlistAsset,
+  reSellAsset,
+  listenForAssetAdded,
+  listenForAssetSold,
+  listenForStatusUpdates
+} from "../../utils/contractintegration/Contract";
 
 const outfit = Outfit({
   subsets: ["latin"],
   weight: "400",
 });
 
-const allAssets = [
-  {
-    id: 1,
-    name: "Steel Sword",
-    description: "A sturdy sword forged from high-quality steel",
-    price: "0.25",
-    category: "Weapon",
-    game: "Dummy Game",
-    rarity: "Common",
-    image: SteelSword,
-  },
-  {
-    id: 2,
-    name: "Elven Bow",
-    description: "An elegant bow crafted by elven artisans",
-    price: "0.45",
-    category: "Weapon",
-    game: "Dummy Game",
-    rarity: "Rare",
-    image: ElvenBow,
-  },
-  {
-    id: 3,
-    name: "Flame Staff",
-    description: "Staff imbued with the power of fire",
-    price: "0.75",
-    category: "Weapon",
-    game: "Dummy Game",
-    rarity: "Epic",
-    image: FlameStaff,
-  },
-  {
-    id: 4,
-    name: "Frost Axe",
-    description: "Axe that freezes enemies on impact",
-    price: "0.65",
-    category: "Weapon",
-    game: "Dummy Game",
-    rarity: "Epic",
-    image: FrostAxe,
-  },
-  {
-    id: 5,
-    name: "Wooden Shield",
-    description: "Basic shield for beginner warriors",
-    price: "0.15",
-    category: "Armor",
-    game: "Dummy Game",
-    rarity: "Common",
-    image: WoodenShield,
-  },
-  {
-    id: 6,
-    name: "Leather Armor",
-    description: "Lightweight armor made from tough leather",
-    price: "0.35",
-    category: "Armor",
-    game: "Dummy Game",
-    rarity: "Common",
-    image: LeatherArmor,
-  },
-  {
-    id: 7,
-    name: "Dragon Helm",
-    description: "Helmet crafted from dragon scales",
-    price: "1.25",
-    category: "Armor",
-    game: "Dummy Game",
-    rarity: "Legendary",
-    image: DragonHelm,
-  },
-  {
-    id: 8,
-    name: "Health Potion",
-    description: "Restores 50 health points",
-    price: "0.05",
-    category: "Consumable",
-    game: "Dummy Game",
-    rarity: "Common",
-    image: HealthPotion,
-  },
-  {
-    id: 9,
-    name: "Mana Elixir",
-    description: "Restores 30 mana points",
-    price: "0.07",
-    category: "Consumable",
-    game: "Dummy Game",
-    rarity: "Common",
-    image: ManaElixir,
-  },
-  {
-    id: 10,
-    name: "Speed Draught",
-    description: "Increases movement speed by 20% for 1 minute",
-    price: "0.12",
-    category: "Consumable",
-    game: "Dummy Game",
-    rarity: "Rare",
-    image: SpeedDraught,
-  },
-  {
-    id: 11,
-    name: "Ring of Power",
-    description: "Increases all stats by 5%",
-    price: "0.95",
-    category: "Accessory",
-    game: "Dummy Game",
-    rarity: "Epic",
-    image: RingOfPower,
-  },
-  {
-    id: 12,
-    name: "Ancient Scroll",
-    description: "Teaches a random rare spell",
-    price: "0.55",
-    category: "Miscellaneous",
-    game: "Dummy Game",
-    rarity: "Rare",
-    image: AncientScroll,
-  }
-];
-
-const dummyTransactions = [
-  {
-    id: 1,
-    assetName: "Steel Sword",
-    game: "Dummy Game",
-    amount: "0.25 ETH",
-    fromTo: "0x8a3f...2d4c",
-    type: "Buy",
-    date: "2023-05-12"
-  },
-  {
-    id: 2,
-    assetName: "Elven Bow",
-    game: "Dummy Game",
-    amount: "0.45 ETH",
-    fromTo: "0x5b2e...7f9a",
-    type: "Buy",
-    date: "2023-06-22"
-  },
-  {
-    id: 3,
-    assetName: "Flame Staff",
-    game: "Dummy Game",
-    amount: "0.75 ETH",
-    fromTo: "0x3c1d...6e8b",
-    type: "Buy",
-    date: "2023-07-15"
-  },
-  {
-    id: 4,
-    assetName: "Wooden Shield",
-    game: "Dummy Game ",
-    amount: "0.15 ETH",
-    fromTo: "0x9f4a...1c2d",
-    type: "Sell",
-    date: "2023-08-03"
-  },
-  {
-    id: 5,
-    assetName: "Dragon Helm",
-    game: "Dummy Game",
-    amount: "1.25 ETH",
-    fromTo: "0x7e5b...3d4e",
-    type: "Buy",
-    date: "2023-09-18"
-  },
-  {
-    id: 6,
-    assetName: "Health Potion",
-    game: "Dummy Game ",
-    amount: "0.05 ETH",
-    fromTo: "0x2a6c...9f1b",
-    type: "Sell",
-    date: "2023-10-05"
-  },
-  {
-    id: 7,
-    assetName: "Ring of Power",
-    game: "Dummy Game",
-    amount: "0.95 ETH",
-    fromTo: "0x4d3e...8c2a",
-    type: "Buy",
-    date: "2023-11-11"
-  }
-];
-
 export default function Collection() {
+  const {
+    isConnected,
+    account,
+    connectWallet,
+    shortenAddress,
+  } = useWallet();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     rarity: [],
     category: [],
-    game: []
+    game: [],
+    status: []
   });
-  const [filteredAssets, setFilteredAssets] = useState(allAssets);
-  const [filteredTransactions] = useState(dummyTransactions);
+  const [assets, setAssets] = useState([]);
+  const [filteredAssets, setFilteredAssets] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [resellPrice, setResellPrice] = useState("");
+  const [resellAssetId, setResellAssetId] = useState(null);
+  const [showResellModal, setShowResellModal] = useState(false);
 
-  const allRarities = [...new Set(allAssets.map(item => item.rarity))];
-  const allCategories = [...new Set(allAssets.map(item => item.category))];
-  const allGames = [...new Set(allAssets.map(item => item.game))];
+  const allRarities = [...new Set(assets.map(item => item.rarities))];
+  const allCategories = [...new Set(assets.map(item => item.category))];
+  const allGames = [...new Set(assets.map(item => item.gameName))];
+  const allStatuses = ["Active", "Market", "Sold"];
 
   useEffect(() => {
-    let result = allAssets;
+    const fetchAssets = async () => {
+      try {
+        const allAssets = await viewAllAssets();
+        const formattedAssets = allAssets.map((asset, index) => ({
+          id: index,
+          seller: asset.seller,
+          buyer: asset.buyer,
+          name: asset.assetName,
+          description: asset.description,
+          price: asset.price,
+          category: asset.category,
+          game: asset.gameName,
+          rarity: asset.rarities,
+          image: asset.assetImage,
+          profileStatus: asset.ProfileStatus,
+          marketStatus: asset.MarketStatus,
+          transactionStatus: asset.TransactionStatus
+        }));
+
+        setAssets(formattedAssets);
+        setFilteredAssets(formattedAssets);
+
+        const userTransactions = formattedAssets
+          .filter(asset =>
+            (asset.seller.toLowerCase() === account?.toLowerCase() ||
+              asset.buyer.toLowerCase() === account?.toLowerCase()) &&
+            asset.transactionStatus === "Completed"
+          )
+          .map(asset => ({
+            id: asset.id,
+            assetName: asset.name,
+            game: asset.game,
+            amount: `${asset.price} ETH`,
+            counterparty: asset.seller.toLowerCase() === account?.toLowerCase() ? asset.buyer : asset.seller,
+            type: asset.seller.toLowerCase() === account?.toLowerCase() ? "Sell" : "Buy",
+            date: new Date().toISOString().split('T')[0]
+          }));
+
+        setTransactions(userTransactions);
+        setFilteredTransactions(userTransactions);
+      } catch (error) {
+        console.error("Error fetching assets:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isConnected && account) {
+      fetchAssets();
+
+      const cleanupAdded = listenForAssetAdded(() => fetchAssets());
+      const cleanupSold = listenForAssetSold(() => fetchAssets());
+      const cleanupStatus = listenForStatusUpdates(() => fetchAssets());
+
+      return () => {
+        cleanupAdded();
+        cleanupSold();
+        cleanupStatus();
+      };
+    }
+  }, [isConnected, account]);
+
+  useEffect(() => {
+    let result = assets.filter(asset =>
+      asset.seller.toLowerCase() === account?.toLowerCase() ||
+      asset.buyer.toLowerCase() === account?.toLowerCase()
+    );
 
     if (searchTerm) {
       result = result.filter(asset =>
         asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         asset.description.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      );
     }
 
     if (filters.rarity.length > 0) {
@@ -254,8 +142,23 @@ export default function Collection() {
       result = result.filter(asset => filters.game.includes(asset.game));
     }
 
+    if (filters.status.length > 0) {
+      result = result.filter(asset => filters.status.includes(asset.profileStatus));
+    }
+
     setFilteredAssets(result);
-  }, [searchTerm, filters]);
+  }, [searchTerm, filters, assets, account]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = transactions.filter(tx =>
+        tx.assetName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredTransactions(filtered);
+    } else {
+      setFilteredTransactions(transactions);
+    }
+  }, [searchTerm, transactions]);
 
   const toggleFilter = (type, value) => {
     setFilters(prev => {
@@ -274,16 +177,123 @@ export default function Collection() {
     setFilters({
       rarity: [],
       category: [],
-      game: []
+      game: [],
+      status: []
     });
     setSearchTerm("");
   };
 
-  const handleSell = (assetId) => {
-    // In a real app, this would trigger a sell transaction
-    console.log(`Selling asset with ID: ${assetId}`);
-    alert(`Initiated sale for asset ID: ${assetId}`);
+  const handleSell = async (assetId) => {
+    if (!isConnected) {
+      alert("Please connect your wallet first");
+      return;
+    }
+
+    try {
+      await sellAsset(assetId);
+      alert("Asset listed for sale successfully");
+    } catch (error) {
+      console.error("Error selling asset:", error);
+      alert("Failed to list asset for sale");
+    }
   };
+
+  const handleUnlist = async (assetId) => {
+    if (!isConnected) {
+      alert("Please connect your wallet first");
+      return;
+    }
+
+    try {
+      await unlistAsset(assetId);
+      alert("Asset unlisted successfully");
+    } catch (error) {
+      console.error("Error unlisting asset:", error);
+      alert("Failed to unlist asset");
+    }
+  };
+
+  const openResellModal = (assetId) => {
+    setResellAssetId(assetId);
+    setShowResellModal(true);
+  };
+
+  const handleResell = async () => {
+    if (!isConnected) {
+      alert("Please connect your wallet first");
+      return;
+    }
+
+    if (!resellPrice || isNaN(resellPrice) || parseFloat(resellPrice) <= 0) {
+      alert("Please enter a valid price");
+      return;
+    }
+
+    try {
+      await reSellAsset(resellAssetId, resellPrice);
+      alert("Asset listed for resale successfully");
+      setShowResellModal(false);
+      setResellPrice("");
+    } catch (error) {
+      console.error("Error reselling asset:", error);
+      alert(`Failed to list asset for resale: ${error.message}`);
+    }
+  };
+
+  if (!isConnected) {
+    return (
+      <div className={`${outfit.className} text-white min-h-screen flex flex-col`}>
+        <div className="fixed inset-0 -z-10">
+          <Image
+            src={BgImage}
+            alt="Background"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+          />
+          <div className="absolute inset-0 bg-opacity-70"></div>
+        </div>
+        <div className="flex-grow">
+          <Header />
+          <div className="min-h-screen px-4 sm:px-8 lg:px-20 py-12 relative z-10 flex flex-col items-center justify-center">
+            <h1 className="text-3xl font-bold mb-6">My Collection</h1>
+            <p className="text-xl mb-8">Please connect your wallet to view your collection</p>
+            <button
+              onClick={connectWallet}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold"
+            >
+              Connect Wallet
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className={`${outfit.className} text-white min-h-screen flex flex-col`}>
+        <div className="fixed inset-0 -z-10">
+          <Image
+            src={BgImage}
+            alt="Background"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+          />
+          <div className="absolute inset-0 bg-opacity-70"></div>
+        </div>
+        <div className="flex-grow">
+          <Header />
+          <div className="min-h-screen px-4 sm:px-8 lg:px-20 py-12 relative z-10 flex flex-col items-center justify-center">
+            <h1 className="text-3xl font-bold mb-6">Loading your collection...</h1>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className={`${outfit.className} text-white min-h-screen flex flex-col`}>
@@ -302,7 +312,10 @@ export default function Collection() {
 
         <div className="min-h-screen px-4 sm:px-8 lg:px-20 py-12 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <h1 className="text-3xl font-bold">My Collection</h1>
+            <div>
+              <h1 className="text-3xl font-bold">My Collection</h1>
+              <p className="text-gray-400">{shortenAddress(account)}</p>
+            </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
               <div className="relative flex-grow max-w-md">
@@ -337,7 +350,26 @@ export default function Collection() {
                       </button>
                     </div>
 
-                    {/* Rarity Filter */}
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium mb-2">Status</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {allStatuses.map(status => (
+                          <button
+                            key={status}
+                            className={`text-xs px-3 py-1 rounded-md ${filters.status.includes(status)
+                              ? status === "Active" ? "bg-green-900 text-green-200" :
+                                status === "Market" ? "bg-blue-900 text-blue-200" :
+                                  "bg-purple-900 text-purple-200"
+                              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                              }`}
+                            onClick={() => toggleFilter('status', status)}
+                          >
+                            {status}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <div className="mb-4">
                       <h4 className="text-sm font-medium mb-2">Rarity</h4>
                       <div className="flex flex-wrap gap-2">
@@ -359,7 +391,6 @@ export default function Collection() {
                       </div>
                     </div>
 
-                    {/* Category Filter */}
                     <div className="mb-4">
                       <h4 className="text-sm font-medium mb-2">Category</h4>
                       <div className="flex flex-wrap gap-2">
@@ -378,7 +409,6 @@ export default function Collection() {
                       </div>
                     </div>
 
-                    {/* Game Filter */}
                     <div className="mb-2">
                       <h4 className="text-sm font-medium mb-2">Game</h4>
                       <div className="flex flex-wrap gap-2">
@@ -402,8 +432,19 @@ export default function Collection() {
             </div>
           </div>
 
-          {(filters.rarity.length > 0 || filters.category.length > 0 || filters.game.length > 0) && (
+          {(filters.rarity.length > 0 || filters.category.length > 0 || filters.game.length > 0 || filters.status.length > 0) && (
             <div className="flex flex-wrap gap-2 mb-6">
+              {filters.status.map(status => (
+                <div key={status} className="flex items-center bg-gray-700 rounded-full px-3 py-1 text-sm">
+                  {status}
+                  <button
+                    onClick={() => toggleFilter('status', status)}
+                    className="ml-2 text-gray-300 hover:text-white"
+                  >
+                    <FiX size={14} />
+                  </button>
+                </div>
+              ))}
               {filters.rarity.map(rarity => (
                 <div key={rarity} className="flex items-center bg-gray-700 rounded-full px-3 py-1 text-sm">
                   {rarity}
@@ -468,7 +509,6 @@ export default function Collection() {
                 key={asset.id}
                 className="border rounded-lg shadow-lg text-[#6D737A] font-sans space-y-3 px-3 py-4 w-full max-w-xs bg-white/10 backdrop-blur-md border-white/10 hover:border-indigo-500 transition-colors relative"
               >
-                {/* Header */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Image
@@ -483,9 +523,8 @@ export default function Collection() {
                   </span>
                 </div>
 
-                {/* Image with rarity badge */}
                 <div className="relative w-full h-48 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
-                  <Image
+                  <img
                     src={asset.image}
                     alt={asset.name}
                     className="object-contain h-32 w-32"
@@ -499,13 +538,11 @@ export default function Collection() {
                   </span>
                 </div>
 
-                {/* Info */}
                 <div>
                   <h3 className="font-semibold text-white text-lg">{asset.name}</h3>
                   <p className="text-sm text-gray-400 line-clamp-2">{asset.description}</p>
                 </div>
 
-                {/* Price & Ownership */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 text-sm text-green-400">
                     <FaEthereum className="text-green-400 w-5 h-5" />
@@ -514,22 +551,46 @@ export default function Collection() {
                       <span className="font-semibold text-white">{asset.price} ETH</span>
                     </div>
                   </div>
-                  <div className="bg-green-900/90 text-white text-xs px-2 py-1 rounded flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    Owned
+                  <div className={`text-xs px-2 py-1 rounded flex items-center ${asset.profileStatus === "Active" ? "bg-green-900/90 text-white" :
+                      asset.profileStatus === "Market" ? "bg-blue-900/90 text-white" :
+                        "bg-purple-900/90 text-white"
+                    }`}>
+                    {asset.profileStatus}
                   </div>
                 </div>
 
-
-                {/* Sell Button */}
-                <button
-                  onClick={() => handleSell(asset.id)}
-                  className="w-full mt-3 bg-red-600 hover:bg-red-700 text-white py-2 rounded-md font-medium transition-colors"
-                >
-                  Sell
-                </button>
+                {asset.seller.toLowerCase() === account.toLowerCase() && asset.profileStatus === "Active" && (
+                  <button
+                    onClick={() => handleSell(asset.id)}
+                    className="w-full mt-3 bg-red-600 hover:bg-red-700 text-white py-2 rounded-md font-medium transition-colors"
+                  >
+                    Sell
+                  </button>
+                )}
+                {asset.seller.toLowerCase() === account.toLowerCase() && asset.profileStatus === "Market" && (
+                  <button
+                    onClick={() => handleUnlist(asset.id)}
+                    className="w-full mt-3 bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded-md font-medium transition-colors"
+                  >
+                    Unlist
+                  </button>
+                )}
+                {asset.buyer.toLowerCase() === account.toLowerCase() && asset.profileStatus === "Sold" && (
+                  <button
+                    onClick={() => openResellModal(asset.id)}
+                    className="w-full mt-3 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md font-medium transition-colors"
+                  >
+                    Resell
+                  </button>
+                )}
+                {asset.profileStatus === "Sold" && asset.buyer.toLowerCase() !== account.toLowerCase() && (
+                  <button
+                    disabled
+                    className="w-full mt-3 bg-gray-600 text-white py-2 rounded-md font-medium cursor-not-allowed"
+                  >
+                    Sold
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -557,7 +618,8 @@ export default function Collection() {
                   <th className="px-4 py-3">Asset Name</th>
                   <th className="px-4 py-3">Game</th>
                   <th className="px-4 py-3">Amount</th>
-                  <th className="px-4 py-3">From / To</th>
+                  <th className="px-4 py-3">Role</th>
+                  <th className="px-4 py-3">Counterparty</th>
                   <th className="px-4 py-3">Type</th>
                   <th className="px-4 py-3">Date</th>
                 </tr>
@@ -571,9 +633,13 @@ export default function Collection() {
                     <td className="px-4 py-3 text-green-400 flex items-center">
                       <FaEthereum className="mr-1" /> {tx.amount}
                     </td>
-                    <td className="px-4 py-3 text-gray-400">{tx.fromTo}</td>
-                    <td className={`px-4 py-3 ${tx.type === "Buy" ? "text-green-400" : "text-red-400"
-                      }`}>
+                    <td className="px-4 py-3 text-gray-400">
+                      {tx.type === "Buy" ? "Buyer" : "Seller"}
+                    </td>
+                    <td className="px-4 py-3 text-gray-400">
+                      {shortenAddress(tx.counterparty)}
+                    </td>
+                    <td className={`px-4 py-3 ${tx.type === "Buy" ? "text-green-400" : "text-red-400"}`}>
                       {tx.type}
                     </td>
                     <td className="px-4 py-3 text-gray-400">{tx.date}</td>
@@ -584,6 +650,43 @@ export default function Collection() {
           </div>
         </div>
       </div>
+
+      {showResellModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4">Resell Asset</h3>
+            <div className="mb-4">
+              <label className="block text-gray-400 mb-2">New Price (ETH)</label>
+              <input
+                type="number"
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={resellPrice}
+                onChange={(e) => setResellPrice(e.target.value)}
+                min="0"
+                step="0.01"
+                placeholder="Enter new price"
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowResellModal(false);
+                  setResellPrice("");
+                }}
+                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleResell}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+              >
+                Confirm Resell
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

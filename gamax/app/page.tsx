@@ -7,6 +7,7 @@ import landingpageimage2 from "../assets/landingpageimage2.png";
 import landingpageimage3 from "../assets/landingpageimage3.png";
 import BgImage from "../assets/Bg.jpg";
 import { Outfit } from "next/font/google";
+import Link from "next/link";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -54,10 +55,10 @@ export default function Home() {
               </p>
               <div className="flex justify-center lg:justify-start space-x-4">
                 <button className="bg-indigo-500 hover:bg-indigo-600 px-6 py-3 rounded-lg transition">
-                  Explore
+                  <Link href="/profile">Explore</Link>
                 </button>
                 <button className="border border-indigo-500 hover:bg-indigo-700 px-6 py-3 rounded-lg transition">
-                  Create
+                  <Link href="/collaborators">Create</Link>
                 </button>
               </div>
             </div>
@@ -73,11 +74,13 @@ export default function Home() {
           </section>
 
           <div className="px-24 py-8">
-            <Image
-              src={landingpageimage3}
-              alt="landingpageimage3"
-              className=""
-            />
+            <Link href="/collaborators">
+              <Image
+                src={landingpageimage3}
+                alt="landingpageimage3"
+                className=""
+              />
+            </Link>
           </div>
         </main>
       </div>
