@@ -182,6 +182,7 @@ export default function Collection() {
     }
 
     setFilteredAssets(result);
+    console.log(filteredAssets)
   }, [searchTerm, filters, assets, account]);
 
   useEffect(() => {
@@ -559,7 +560,7 @@ export default function Collection() {
                 </div>
 
                 <div className="relative w-full h-48 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
-                  <img
+                  <Image
                     src={getAssetImage(asset.image)}
                     alt={asset.name}
                     className="object-contain h-32 w-32"
@@ -656,7 +657,6 @@ export default function Collection() {
                   <th className="px-4 py-3">Role</th>
                   <th className="px-4 py-3">Counterparty</th>
                   <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3">Date</th>
                 </tr>
               </thead>
               <tbody className="bg-white/5">
@@ -677,7 +677,6 @@ export default function Collection() {
                     <td className={`px-4 py-3 ${tx.type === "Buy" ? "text-green-400" : "text-red-400"}`}>
                       {tx.type}
                     </td>
-                    <td className="px-4 py-3 text-gray-400">{tx.date}</td>
                   </tr>
                 ))}
               </tbody>

@@ -307,7 +307,7 @@ export default function Marketplace() {
                   </div>
 
                   <div className="relative w-full h-56 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
-                    <img
+                    <Image
                       src={getAssetImage(asset.image)}
                       alt={asset.name}
                       className="object-contain h-40 w-40"

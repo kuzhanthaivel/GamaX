@@ -53,7 +53,7 @@ const gameAssets = [
         price: "0.25",
         category: "Weapon",
         rarity: "Common",
-        image: 'SteelSword',
+        image: "SteelSword",
     },
     {
         id: 2,
@@ -62,7 +62,7 @@ const gameAssets = [
         price: "0.45",
         category: "Weapon",
         rarity: "Rare",
-        image: 'ElvenBow',
+        image: "ElvenBow",
     },
     {
         id: 3,
@@ -71,7 +71,7 @@ const gameAssets = [
         price: "0.75",
         category: "Weapon",
         rarity: "Epic",
-        image: 'FlameStaff',
+        image: "FlameStaff",
     },
     {
         id: 4,
@@ -80,7 +80,7 @@ const gameAssets = [
         price: "0.65",
         category: "Weapon",
         rarity: "Epic",
-        image: 'FrostAxe',
+        image: "FrostAxe",
     },
     {
         id: 5,
@@ -89,7 +89,7 @@ const gameAssets = [
         price: "0.15",
         category: "Armor",
         rarity: "Common",
-        image: 'WoodenShield',
+        image: "WoodenShield",
     },
     {
         id: 6,
@@ -98,7 +98,7 @@ const gameAssets = [
         price: "0.35",
         category: "Armor",
         rarity: "Common",
-        image: 'LeatherArmor',
+        image: "LeatherArmor",
     },
     {
         id: 7,
@@ -107,7 +107,7 @@ const gameAssets = [
         price: "1.25",
         category: "Armor",
         rarity: "Legendary",
-        image: 'DragonHelm',
+        image: "DragonHelm",
     },
     {
         id: 8,
@@ -116,7 +116,7 @@ const gameAssets = [
         price: "0.05",
         category: "Consumable",
         rarity: "Common",
-        image: 'HealthPotion',
+        image: "HealthPotion" ,
     },
     {
         id: 9,
@@ -125,7 +125,7 @@ const gameAssets = [
         price: "0.07",
         category: "Consumable",
         rarity: "Common",
-        image: 'ManaElixir',
+        image: "ManaElixir",
     },
     {
         id: 10,
@@ -134,7 +134,7 @@ const gameAssets = [
         price: "0.12",
         category: "Consumable",
         rarity: "Rare",
-        image: 'SpeedDraught',
+        image: "SpeedDraught",
     },
     {
         id: 11,
@@ -143,7 +143,7 @@ const gameAssets = [
         price: "0.95",
         category: "Accessory",
         rarity: "Epic",
-        image: 'RingOfPower',
+        image: "RingOfPower",
     },
     {
         id: 12,
@@ -152,7 +152,7 @@ const gameAssets = [
         price: "0.55",
         category: "Miscellaneous",
         rarity: "Rare",
-        image: 'AncientScroll',
+        image: "AncientScroll",
     }
 ];
 
