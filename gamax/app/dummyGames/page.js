@@ -6,8 +6,8 @@ import { Outfit } from 'next/font/google';
 import GameBg from '../../assets/Bg.jpg';
 import { FaEthereum, FaSpinner } from "react-icons/fa";
 import { FiArrowLeft } from "react-icons/fi";
-import { addProfile, getAllProfiles } from '../../utils/contractintegration/Profile';
 
+// Import game assets
 import SteelSword from '../../assets/Gameassets/SteelSword.png';
 import ElvenBow from '../../assets/Gameassets/Elven_Bow.png';
 import FlameStaff from '../../assets/Gameassets/Flame_Staff.png';
@@ -20,25 +20,6 @@ import ManaElixir from '../../assets/Gameassets/Mana_Elixir.png';
 import SpeedDraught from '../../assets/Gameassets/Speed_Draught.png';
 import RingOfPower from '../../assets/Gameassets/Ring_of_Power.png';
 import AncientScroll from '../../assets/Gameassets/Ancient_Scroll.png';
-
-const imageMap = {
-    "SteelSword": SteelSword,
-    "ElvenBow": ElvenBow,
-    "FlameStaff": FlameStaff,
-    "FrostAxe": FrostAxe,
-    "WoodenShield": WoodenShield,
-    "LeatherArmor": LeatherArmor,
-    "DragonHelm": DragonHelm,
-    "HealthPotion": HealthPotion,
-    "ManaElixir": ManaElixir,
-    "SpeedDraught": SpeedDraught,
-    "RingOfPower": RingOfPower,
-    "AncientScroll": AncientScroll
-};
-
-const getAssetImage = (imageName) => {
-    return imageMap[imageName] || null;
-};
 
 const outfit = Outfit({
     subsets: ["latin"],
@@ -53,7 +34,7 @@ const gameAssets = [
         price: "0.25",
         category: "Weapon",
         rarity: "Common",
-        image: "SteelSword",
+        image: SteelSword,
     },
     {
         id: 2,
@@ -62,7 +43,7 @@ const gameAssets = [
         price: "0.45",
         category: "Weapon",
         rarity: "Rare",
-        image: "ElvenBow",
+        image: ElvenBow,
     },
     {
         id: 3,
@@ -71,7 +52,7 @@ const gameAssets = [
         price: "0.75",
         category: "Weapon",
         rarity: "Epic",
-        image: "FlameStaff",
+        image: FlameStaff,
     },
     {
         id: 4,
@@ -80,7 +61,7 @@ const gameAssets = [
         price: "0.65",
         category: "Weapon",
         rarity: "Epic",
-        image: "FrostAxe",
+        image: FrostAxe,
     },
     {
         id: 5,
@@ -89,7 +70,7 @@ const gameAssets = [
         price: "0.15",
         category: "Armor",
         rarity: "Common",
-        image: "WoodenShield",
+        image: WoodenShield,
     },
     {
         id: 6,
@@ -98,7 +79,7 @@ const gameAssets = [
         price: "0.35",
         category: "Armor",
         rarity: "Common",
-        image: "LeatherArmor",
+        image: LeatherArmor,
     },
     {
         id: 7,
@@ -107,7 +88,7 @@ const gameAssets = [
         price: "1.25",
         category: "Armor",
         rarity: "Legendary",
-        image: "DragonHelm",
+        image: DragonHelm,
     },
     {
         id: 8,
@@ -116,7 +97,7 @@ const gameAssets = [
         price: "0.05",
         category: "Consumable",
         rarity: "Common",
-        image: "HealthPotion",
+        image: HealthPotion,
     },
     {
         id: 9,
@@ -125,7 +106,7 @@ const gameAssets = [
         price: "0.07",
         category: "Consumable",
         rarity: "Common",
-        image: "ManaElixir",
+        image: ManaElixir,
     },
     {
         id: 10,
@@ -134,7 +115,7 @@ const gameAssets = [
         price: "0.12",
         category: "Consumable",
         rarity: "Rare",
-        image: "SpeedDraught",
+        image: SpeedDraught,
     },
     {
         id: 11,
@@ -143,7 +124,7 @@ const gameAssets = [
         price: "0.95",
         category: "Accessory",
         rarity: "Epic",
-        image: "RingOfPower",
+        image: RingOfPower,
     },
     {
         id: 12,
@@ -152,7 +133,7 @@ const gameAssets = [
         price: "0.55",
         category: "Miscellaneous",
         rarity: "Rare",
-        image: "AncientScroll",
+        image: AncientScroll,
     }
 ];
 
@@ -164,7 +145,6 @@ export default function DummyGame() {
     const [isConnected, setIsConnected] = useState(false);
     const [account, setAccount] = useState(null);
     const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
-    const [ownedAssets, setOwnedAssets] = useState([]);
 
     useEffect(() => {
         if (typeof window.ethereum !== 'undefined') {
@@ -183,24 +163,6 @@ export default function DummyGame() {
         }
     }, []);
 
-    useEffect(() => {
-        if (isConnected && account) {
-            fetchOwnedAssets();
-        }
-    }, [isConnected, account]);
-
-    const fetchOwnedAssets = async () => {
-        try {
-            const profiles = await getAllProfiles();
-            const userAssets = profiles.filter(
-                profile => profile.user.toLowerCase() === account.toLowerCase()
-            );
-            setOwnedAssets(userAssets.map(asset => asset.assetName));
-        } catch (error) {
-            console.error("Error fetching owned assets:", error);
-        }
-    };
-
     const checkConnection = async () => {
         try {
             const accounts = await window.ethereum.request({ method: 'eth_accounts' });
@@ -217,7 +179,6 @@ export default function DummyGame() {
         if (accounts.length === 0) {
             setIsConnected(false);
             setAccount(null);
-            setOwnedAssets([]);
         } else {
             setIsConnected(true);
             setAccount(accounts[0]);
@@ -248,21 +209,15 @@ export default function DummyGame() {
     const disconnectWallet = () => {
         setIsConnected(false);
         setAccount(null);
-        setOwnedAssets([]);
     };
 
     const shortenAddress = (addr) => {
         return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
     };
 
-    const collectAsset = async (asset) => {
+    const collectAsset = (asset) => {
         if (!isConnected) {
             alert("Please connect your wallet first!");
-            return;
-        }
-
-        if (ownedAssets.includes(asset.name)) {
-            alert(`You already own ${asset.name}!`);
             return;
         }
 
@@ -280,36 +235,18 @@ export default function DummyGame() {
             });
         }, 1000);
 
-        try {
-            // Wait for the collection animation to complete
-            await new Promise(resolve => setTimeout(resolve, 10000));
-            
-            const profileData = {
-                user: account,
-                assetName: asset.name,
-                category: asset.category,
-                price: asset.price.toString(),
-                gameName: "Dummy Game",
-                assetImage: asset.image,
-                description: asset.description,
-                rarities: asset.rarity,
-                status: "Active"
-            };
-
-            const tx = await addProfile(profileData);
-            await tx.wait();
-            
-            // Update owned assets list
-            setOwnedAssets(prev => [...prev, asset.name]);
-            alert(`${asset.name} collected successfully!`);
-        } catch (error) {
-            console.error("Error collecting asset:", error);
-            alert(`Failed to collect ${asset.name}. Please try again.`);
-        } finally {
+        setTimeout(() => {
             clearInterval(interval);
             setIsCollecting(false);
+            addProfileAsset(asset);
             setCurrentCollectingAsset(null);
-        }
+        }, 10000);
+    };
+
+    const addProfileAsset = (asset) => {
+
+        console.log("Adding asset to profile:", asset);
+        alert(`${asset.name} collected successfully!`);
     };
 
     return (
@@ -343,6 +280,7 @@ export default function DummyGame() {
 
                         {isConnected ? (
                             <div className="flex items-center space-x-4">
+
                                 <button
                                     onClick={disconnectWallet}
                                     className="bg-indigo-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition w-36"
@@ -365,34 +303,22 @@ export default function DummyGame() {
                             Defeat enemies, complete quests, and collect rare items that you can own as NFTs.
                             The items you collect here will appear in your profile collection.
                         </p>
-                        {isConnected && (
-                            <p className="text-green-400">
-                                You own {ownedAssets.length} item(s) from this game.
-                            </p>
-                        )}
+
                     </div>
                     <h2 className="text-2xl font-bold mb-6 text-center">Available Loot</h2>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
                         {gameAssets.map((asset) => {
                             const isCurrentAssetCollecting = isCollecting && currentCollectingAsset?.id === asset.id;
-                            const isOwned = ownedAssets.includes(asset.name);
 
                             return (
                                 <div
                                     key={asset.id}
-                                    className={`border rounded-lg shadow-lg space-y-3 px-3 py-4 w-full max-w-xs bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-md border-white/10 hover:border-blue-500 transition-colors relative ${
-                                        isOwned ? "ring-2 ring-green-500" : ""
-                                    }`}
+                                    className="border rounded-lg shadow-lg space-y-3 px-3 py-4 w-full max-w-xs bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-md border-white/10 hover:border-blue-500 transition-colors relative"
                                 >
-                                    {isOwned && (
-                                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
-                                            OWNED
-                                        </div>
-                                    )}
                                     <div className="relative w-full h-48 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
                                         <Image
-                                            src={getAssetImage(asset.image)}
+                                            src={asset.image}
                                             alt={asset.name}
                                             className="object-contain h-32 w-32"
                                         />
@@ -414,7 +340,7 @@ export default function DummyGame() {
                                         <div className="flex items-center gap-1 text-sm text-green-400">
                                             <FaEthereum className="text-green-400 w-5 h-5" />
                                             <div className="flex flex-col">
-                                                <span className="text-xs text-gray-400">Worth</span>
+                                                <span className="text-xs text-gray-400">Price</span>
                                                 <span className="font-semibold text-white">{asset.price} ETH</span>
                                             </div>
                                         </div>
@@ -425,18 +351,13 @@ export default function DummyGame() {
 
                                     <button
                                         onClick={() => collectAsset(asset)}
-                                        disabled={isCollecting || isOwned}
-                                        className={`w-full mt-3 py-2 rounded-md font-medium transition-colors flex items-center justify-center gap-2 ${
-                                            isOwned 
-                                                ? "bg-gray-600 cursor-not-allowed" 
-                                                : isCurrentAssetCollecting
-                                                    ? "bg-blue-700 cursor-not-allowed"
-                                                    : "bg-blue-600 hover:bg-blue-700"
-                                        } ${(isCollecting && !isCurrentAssetCollecting) || isOwned ? "opacity-50 cursor-not-allowed" : ""}`}
+                                        disabled={isCollecting}
+                                        className={`w-full mt-3 py-2 rounded-md font-medium transition-colors flex items-center justify-center gap-2 ${isCurrentAssetCollecting
+                                                ? "bg-blue-700 cursor-not-allowed"
+                                                : "bg-blue-600 hover:bg-blue-700"
+                                            } ${isCollecting && !isCurrentAssetCollecting ? "opacity-50 cursor-not-allowed" : ""}`}
                                     >
-                                        {isOwned ? (
-                                            "Already Owned"
-                                        ) : isCurrentAssetCollecting ? (
+                                        {isCurrentAssetCollecting ? (
                                             <>
                                                 <FaSpinner className="animate-spin" />
                                                 <span>Collecting ({collectionProgress}%)</span>
