@@ -301,7 +301,7 @@ export default function DummyGame() {
             const assetData = {
                 assetName: asset.name,
                 category: asset.category,
-                assetImage: asset,
+                assetImage: asset.image,
                 price: asset.price,
                 gameName: "Dummy Game",
                 description: asset.description,
