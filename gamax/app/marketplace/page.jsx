@@ -25,6 +25,39 @@ import {
   listenForAssetAdded,
 } from "../../utils/contractintegration/Contract";
 
+import SteelSword from '../../assets/Gameassets/SteelSword.png';
+import ElvenBow from '../../assets/Gameassets/Elven_Bow.png';
+import FlameStaff from '../../assets/Gameassets/Flame_Staff.png';
+import FrostAxe from '../../assets/Gameassets/Frost_Axe.png';
+import WoodenShield from '../../assets/Gameassets/Wooden_Shield.png';
+import LeatherArmor from '../../assets/Gameassets/Leather_Armor.png';
+import DragonHelm from '../../assets/Gameassets/Dragon_Helm.png';
+import HealthPotion from '../../assets/Gameassets/Health_Potion.png';
+import ManaElixir from '../../assets/Gameassets/Mana_Elixir.png';
+import SpeedDraught from '../../assets/Gameassets/Speed_Draught.png';
+import RingOfPower from '../../assets/Gameassets/Ring_of_Power.png';
+import AncientScroll from '../../assets/Gameassets/Ancient_Scroll.png';
+
+const imageMap = {
+    "SteelSword": SteelSword,
+    "ElvenBow": ElvenBow,
+    "FlameStaff": FlameStaff,
+    "FrostAxe": FrostAxe,
+    "WoodenShield": WoodenShield,
+    "LeatherArmor": LeatherArmor,
+    "DragonHelm": DragonHelm,
+    "HealthPotion": HealthPotion,
+    "ManaElixir": ManaElixir,
+    "SpeedDraught": SpeedDraught,
+    "RingOfPower": RingOfPower,
+    "AncientScroll": AncientScroll
+};
+
+const getAssetImage = (imageName) => {
+    return imageMap[imageName] || null;
+};
+
+
 const outfit = Outfit({
   subsets: ["latin"],
   weight: "400",
@@ -275,7 +308,7 @@ export default function Marketplace() {
 
                   <div className="relative w-full h-56 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
                     <img
-                      src={asset.image || "/default-asset.png"}
+                      src={getAssetImage(asset.image)}
                       alt={asset.name}
                       className="object-contain h-40 w-40"
                     />

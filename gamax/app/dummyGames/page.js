@@ -21,6 +21,25 @@ import SpeedDraught from '../../assets/Gameassets/Speed_Draught.png';
 import RingOfPower from '../../assets/Gameassets/Ring_of_Power.png';
 import AncientScroll from '../../assets/Gameassets/Ancient_Scroll.png';
 
+const imageMap = {
+    "SteelSword": SteelSword,
+    "ElvenBow": ElvenBow,
+    "FlameStaff": FlameStaff,
+    "FrostAxe": FrostAxe,
+    "WoodenShield": WoodenShield,
+    "LeatherArmor": LeatherArmor,
+    "DragonHelm": DragonHelm,
+    "HealthPotion": HealthPotion,
+    "ManaElixir": ManaElixir,
+    "SpeedDraught": SpeedDraught,
+    "RingOfPower": RingOfPower,
+    "AncientScroll": AncientScroll
+};
+
+const getAssetImage = (imageName) => {
+    return imageMap[imageName] || null;
+};
+
 const outfit = Outfit({
     subsets: ["latin"],
     weight: "400",
@@ -34,7 +53,7 @@ const gameAssets = [
         price: "0.25",
         category: "Weapon",
         rarity: "Common",
-        image: SteelSword,
+        image: 'SteelSword',
     },
     {
         id: 2,
@@ -43,7 +62,7 @@ const gameAssets = [
         price: "0.45",
         category: "Weapon",
         rarity: "Rare",
-        image: ElvenBow,
+        image: 'ElvenBow',
     },
     {
         id: 3,
@@ -52,7 +71,7 @@ const gameAssets = [
         price: "0.75",
         category: "Weapon",
         rarity: "Epic",
-        image: FlameStaff,
+        image: 'FlameStaff',
     },
     {
         id: 4,
@@ -61,7 +80,7 @@ const gameAssets = [
         price: "0.65",
         category: "Weapon",
         rarity: "Epic",
-        image: FrostAxe,
+        image: 'FrostAxe',
     },
     {
         id: 5,
@@ -70,7 +89,7 @@ const gameAssets = [
         price: "0.15",
         category: "Armor",
         rarity: "Common",
-        image: WoodenShield,
+        image: 'WoodenShield',
     },
     {
         id: 6,
@@ -79,7 +98,7 @@ const gameAssets = [
         price: "0.35",
         category: "Armor",
         rarity: "Common",
-        image: LeatherArmor,
+        image: 'LeatherArmor',
     },
     {
         id: 7,
@@ -88,7 +107,7 @@ const gameAssets = [
         price: "1.25",
         category: "Armor",
         rarity: "Legendary",
-        image: DragonHelm,
+        image: 'DragonHelm',
     },
     {
         id: 8,
@@ -97,7 +116,7 @@ const gameAssets = [
         price: "0.05",
         category: "Consumable",
         rarity: "Common",
-        image: HealthPotion,
+        image: 'HealthPotion',
     },
     {
         id: 9,
@@ -106,7 +125,7 @@ const gameAssets = [
         price: "0.07",
         category: "Consumable",
         rarity: "Common",
-        image: ManaElixir,
+        image: 'ManaElixir',
     },
     {
         id: 10,
@@ -115,7 +134,7 @@ const gameAssets = [
         price: "0.12",
         category: "Consumable",
         rarity: "Rare",
-        image: SpeedDraught,
+        image: 'SpeedDraught',
     },
     {
         id: 11,
@@ -124,7 +143,7 @@ const gameAssets = [
         price: "0.95",
         category: "Accessory",
         rarity: "Epic",
-        image: RingOfPower,
+        image: 'RingOfPower',
     },
     {
         id: 12,
@@ -133,7 +152,7 @@ const gameAssets = [
         price: "0.55",
         category: "Miscellaneous",
         rarity: "Rare",
-        image: AncientScroll,
+        image: 'AncientScroll',
     }
 ];
 
@@ -282,7 +301,7 @@ export default function DummyGame() {
             const assetData = {
                 assetName: asset.name,
                 category: asset.category,
-                assetImage: asset.image.src,
+                assetImage: asset,
                 price: asset.price,
                 gameName: "Dummy Game",
                 description: asset.description,
@@ -413,7 +432,7 @@ export default function DummyGame() {
                                     )}
                                     <div className="relative w-full h-48 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
                                         <Image
-                                            src={asset.image}
+                                            src={getAssetImage(asset.image)}
                                             alt={asset.name}
                                             className="object-contain h-32 w-32"
                                         />
